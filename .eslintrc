@@ -1,0 +1,6 @@
+{
+  "extends": "@dmsi/eslint-config",
+  "rules": {
+    "max-len": "off"
+  }
+}

@@ -1,0 +1,39 @@
+@import '~@dmsi/wedgekit/dist/variables';
+
+.layout {
+  font-size: 1.2rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: $dark-blue;
+}
+
+.authContainer {
+  border: $pre-border-color;
+  border-radius: 4px;
+  padding: 20px;
+  background-color: $component-active-color;
+  position: relative;
+  width: 80%;
+  max-width: 600px;
+  box-shadow: 0 58px 92px 8px rgba(86, 87, 89, 0.3);
+}
+
+:global .border--danger {
+  border-color: $brand-danger;
+}
+
+:global .form-checkbox > label > input {
+  margin-right: $pane-spacer-x;
+}
+
+.mockLabel {
+  display: block;
+}
+
+.imgContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
