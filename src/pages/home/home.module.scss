@@ -1,0 +1,50 @@
+@import '~@dmsi/wedgekit/dist/variables';
+
+.homeContiner {
+  .contentContainer {
+    width: 80%;
+    min-width: 500px;
+    margin: 0 auto;
+    padding: 10px;
+  }
+  .prizesHeader {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    border: 1px solid $sonic-silver;
+    border-radius: 10px 10px 0 0;
+    padding: 5px 10px;
+    background-color: $gainsboro;
+
+    h1 {
+      color: $raisin-black;
+    }
+  }
+  .prizesContainer {
+    .prizeContainer {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      border: 1px solid $sonic-silver;
+      border-top: none;
+      padding: 10px;
+      background-color: $alabaster;
+
+      .prizeInfoContainer {
+        h3, p {
+          color: $raisin-black;
+        }
+      }
+
+      .prizeImageContainer {
+        margin-right: 20px;
+
+        .prizeImage {
+          max-height: 100px;
+          max-width: 100px;
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,22 @@
+@import '~@dmsi/wedgekit/dist/variables';
+
+.headerContiner {
+  display: flex;
+  height: 60px;
+  background-color: $dark-blue;
+  flex-direction: row;
+  align-items: center;
+  padding: 10px;
+  justify-content: space-between;
+
+  h2 {
+    color: $white-smoke;
+  }
+
+  div span {
+    color: $white-smoke;
+    font-size: $font-size-lg;
+    margin-right: 10px;
+  }
+}
+

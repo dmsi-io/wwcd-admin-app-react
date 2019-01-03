@@ -1,6 +1,10 @@
 {
   "extends": "@dmsi/eslint-config",
   "rules": {
-    "max-len": "off"
+    "max-len": "off",
+    "jsx-a11y/anchor-is-valid": [ "error", {
+      "components": [],
+      "aspects": [ "noHref", "invalidHref", "preferButton" ]
+    }]
   }
 }
