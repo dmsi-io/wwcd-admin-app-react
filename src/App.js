@@ -11,6 +11,7 @@ import '@dmsi/wedgekit/dist/wedgekit.css';
 import Login from './pages/login/login';
 import PageNotFound from './pages/404/404';
 import Home from './pages/home/home';
+import Users from './pages/users/users';
 
 import Firebase from './fire';
 
@@ -40,6 +41,7 @@ const App = () => (
       <Switch>
         <Route path="/login" exact component={Login} />
         <PrivateRoute path="/" exact component={Home} />
+        <PrivateRoute path="/users" exact component={Users} />
         <Route component={PageNotFound} />
       </Switch>
     </div>

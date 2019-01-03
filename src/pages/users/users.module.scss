@@ -1,0 +1,39 @@
+@import '~@dmsi/wedgekit/dist/variables';
+
+.contentContainer {
+  width: 80%;
+  min-width: 200px;
+  margin: 0 auto;
+  padding: 10px;
+}
+.usersHeader {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  border: 1px solid $sonic-silver;
+  border-radius: 10px 10px 0 0;
+  padding: 5px 10px;
+  background-color: $gainsboro;
+
+  h1 {
+    color: $raisin-black;
+  }
+}
+.usersContainer {
+  .userContainer {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    border: 1px solid $sonic-silver;
+    border-top: none;
+    padding: 10px;
+    background-color: $alabaster;
+
+    .userInfoContainer {
+      h3 {
+        color: $raisin-black;
+      }
+    }
+  }
+}
