@@ -24,8 +24,18 @@ class PrizesPage extends Component {
     const prizesRef = db.collection('prizes');
     prizesRef.get()
       .then((snapshot) => {
+        const prizes = snapshot.docs.map((prize) => ({
+          ...prize.data(),
+          id: prize.id,
+        })).sort((a, b) => {
+          if (a.title < b.title) {
+            return -1;
+          }
+          return a.title > b.title ? 1 : 0;
+        });
+
         this.setState({
-          prizes: snapshot.docs,
+          prizes,
           loading: false,
         });
       })
@@ -36,8 +46,18 @@ class PrizesPage extends Component {
 
     this.prizeUpdateUnsubscribe = prizesRef.onSnapshot({
       next: (snapshot) => {
+        const prizes = snapshot.docs.map((prize) => ({
+          ...prize.data(),
+          id: prize.id,
+        })).sort((a, b) => {
+          if (a.title < b.title) {
+            return -1;
+          }
+          return a.title > b.title ? 1 : 0;
+        });
+
         this.setState({
-          prizes: snapshot.docs,
+          prizes,
         });
       },
       error: (err) => {
@@ -71,29 +91,29 @@ class PrizesPage extends Component {
               </span>
             </div>
             <div className={s.prizesContainer}>
-              {this.state.prizes.map((prize) => {
-                const data = prize.data();
-                return (
-                  <Link key={prize.id} to={`/prize/${prize.id}`}>
-                    <div className={s.prizeContainer}>
-                      {
-                        data.image !== '' &&
-                        <div className={s.prizeImageContainer}>
-                          <img
-                            className={s.prizeImage}
-                            src={data.image}
-                            alt="Prize"
-                          />
-                        </div>
-                      }
-                      <div className={s.prizeInfoContainer}>
-                        <h3>{data.title}</h3>
-                        <p>{data.description}</p>
+              {this.state.prizes.map((prize) => (
+                <Link key={prize.id} to={`/prize/${prize.id}`}>
+                  <div className={s.prizeContainer}>
+                    {
+                      prize.image !== '' &&
+                      <div className={s.prizeImageContainer}>
+                        <img
+                          className={s.prizeImage}
+                          src={prize.image}
+                          alt="Prize"
+                        />
                       </div>
+                    }
+                    <div className={s.prizeInfoContainer}>
+                      <h3>{prize.title}</h3>
+                      <p>{prize.description}</p>
+                      {prize.category !== undefined && prize.category !== '' &&
+                        <p>Category: {prize.category}</p>
+                      }
                     </div>
-                  </Link>
-                );
-              })}
+                  </div>
+                </Link>
+              ))}
             </div>
           </div>
         </div>

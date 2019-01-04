@@ -9,6 +9,16 @@ import Header from '../../components/header/header';
 
 import s from './user.module.scss';
 
+const generatePassword = () => {
+  const length = 8;
+  const charset = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  let retVal = '';
+  for (let i = 0; i < length; ++i) {
+    retVal += charset.charAt(Math.floor(Math.random() * charset.length));
+  }
+  return retVal;
+};
+
 class UserPage extends Component {
   constructor(props) {
     super(props);
@@ -135,6 +145,12 @@ class UserPage extends Component {
     }
   }
 
+  onGenerateUsername = () => {
+    if (this.state.firstName.length > 0 && this.state.lastName.length > 0) {
+      this.setState({ username: `${this.state.firstName.slice(0, 1)}${this.state.lastName}`.toLowerCase() });
+    }
+  }
+
   render() {
     return (
       <div className={s.userContainer}>
@@ -183,6 +199,12 @@ class UserPage extends Component {
                 value={this.state.username}
                 onChange={this.onInputChange}
               />
+              <Button
+                onClick={this.onGenerateUsername}
+                style={{ marginTop: '5px' }}
+              >
+                Generate Username
+              </Button>
             </fieldset>
             <fieldset>
               <label htmlFor="password">Password</label>
@@ -196,6 +218,12 @@ class UserPage extends Component {
                 value={this.state.password}
                 onChange={this.onInputChange}
               />
+              <Button
+                onClick={() => this.setState({ password: generatePassword() })}
+                style={{ marginTop: '5px' }}
+              >
+                Generate Password
+              </Button>
             </fieldset>
             <fieldset>
               <label htmlFor="tickets">Tickets</label>

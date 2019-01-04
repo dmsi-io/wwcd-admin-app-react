@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { Redirect } from 'react-router-dom';
 import uuid from 'uuid/v1';
 
-import { Loading, TextInput, Button, Dropdown } from '@dmsi/wedgekit';
+import { Loading, TextInput, Button, NewSelect, Option } from '@dmsi/wedgekit';
 
 import Firebase from '../../fire';
 import Header from '../../components/header/header';
@@ -226,13 +226,20 @@ class PrizePage extends Component {
               <label htmlFor="title">Category</label>
               <div style={{ display: 'flex', flexDirection: 'row' }}>
                 <div className={s.selectedCategory}>
-                  <Dropdown
-                    align="left"
-                    label={this.state.selectedCategory || 'Select a Category'}
-                    options={this.state.categories}
-                    selected={this.state.selectedCategory}
-                    onSelect={(selectedCategory) => this.setState({ selectedCategory })}
-                  />
+                  <NewSelect
+                    context="default"
+                    label="Category"
+                    labelHidden
+                    onChange={(selectedCategory) => this.setState({ selectedCategory })}
+                    value={this.state.selectedCategory}
+                    placeholder="Select a Category"
+                  >
+                    {this.state.categories.map((category) => (
+                      <Option key={category.id} value={category.id}>
+                        {category.display}
+                      </Option>
+                    ))}
+                  </NewSelect>
                 </div>
                 <div style={{ flex: 1 }} />
               </div>
