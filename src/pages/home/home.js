@@ -12,6 +12,16 @@ export default () => (
     <Header />
     <div className={s.contentContainer}>
       <div>
+        <Link to="/draw">
+          <div>
+            <h1>Draw for Prizes</h1>
+            <div>
+              <IconChevron direction="right" context="brand-dark-blue" />
+            </div>
+          </div>
+        </Link>
+      </div>
+      <div>
         <Link to="/prizes">
           <div>
             <h1>Prizes</h1>

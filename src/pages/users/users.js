@@ -21,24 +21,29 @@ class UsersPage extends Component {
   componentDidMount() {
     const db = Firebase.firestore();
 
-    const usersRef = db.collection('users');
-    usersRef.get()
-      .then((snapshot) => {
+    const sort = (docs) => docs.slice(0).sort((a, b) => {
+      const aData = a.data();
+      const bData = b.data();
+      const aName = `${aData.lastName}, ${aData.firstName}`;
+      const bName = `${bData.lastName}, ${bData.firstName}`;
+      return aName < bName ? -1 : aName > bName ? 1 : 0; // eslint-disable-line
+    });
 
-        this.setState({
-          users: snapshot.docs,
-          loading: false,
-        });
-      })
-      .catch((err) => {
-        // eslint-disable-next-line no-console
-        console.log('Error getting documents', err);
+    const usersRef = db.collection('users');
+    usersRef.get().then((snapshot) => {
+      this.setState({
+        users: sort(snapshot.docs),
+        loading: false,
       });
+    }, (err) => {
+      // eslint-disable-next-line no-console
+      console.log('Error getting documents', err);
+    });
 
     this.usersUpdateUnsubscribe = usersRef.onSnapshot({
       next: (snapshot) => {
         this.setState({
-          users: snapshot.docs,
+          users: sort(snapshot.docs),
         });
       },
       error: (err) => {
@@ -78,7 +83,8 @@ class UsersPage extends Component {
                   <Link key={user.id} to={`/user/${user.id}`}>
                     <div className={s.userContainer}>
                       <div className={s.userInfoContainer}>
-                        <h3>{data.firstName} {data.lastName}</h3>
+                        <h3>{data.lastName}, {data.firstName}</h3>
+                        <p>Tickets: {data.tickets}</p>
                       </div>
                     </div>
                   </Link>
