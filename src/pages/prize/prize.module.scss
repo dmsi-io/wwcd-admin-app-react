@@ -1,0 +1,56 @@
+@import '~@dmsi/wedgekit/dist/variables';
+
+.prizeContainer {
+  .contentContainer {
+    width: 80%;
+    min-width: 200px;
+    margin: 0 auto;
+    padding: 10px;
+
+    h1 {
+      color: $raisin-black;
+    }
+
+    
+
+    fieldset {
+      margin-bottom: 5px;
+
+      label {
+        font-size: 1.3em;
+      }
+
+      img {
+        margin-bottom: 5px;
+        max-width: 200px;
+        max-width: 200px;
+      }
+    }
+
+    .buttonHolder {
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+
+      .saveButton {
+        background-color: $blue;
+        color: #fff;
+        border: none;
+        font-size: 2.0em;
+        font-weight: 500;
+        padding: 3px 10px;
+        margin: 5px 0 0 0;
+      }
+
+      .deleteButton {
+        background-color: $red;
+        color: #fff;
+        border: none;
+        font-size: 2.0em;
+        font-weight: 500;
+        padding: 3px 10px;
+        margin: 5px 0 0 30px;
+      }
+    }
+  }
+}

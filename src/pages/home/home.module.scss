@@ -1,0 +1,26 @@
+@import '~@dmsi/wedgekit/dist/variables';
+
+.contentContainer {
+  width: 80%;
+  min-width: 200px;
+  margin: 0 auto;
+  padding: 10px;
+
+  >div {
+    margin-bottom: 10px;
+  }
+
+  a>div {
+    border: $dark-blue solid 1px;
+    padding: 10px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+
+    div {
+      max-width: 50px;
+      max-height: 50px;
+    }
+  }
+}

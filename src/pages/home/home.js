@@ -1,19 +1,36 @@
-import React, { Component } from 'react';
+import React from 'react';
+import { Link } from 'react-router-dom';
 
-class HomePage extends Component {
-  constructor(props) {
-    super(props);
+import { IconChevron } from '@dmsi/wedgekit';
 
-    this.state = {
+import Header from '../../components/header/header';
 
-    };
-  }
+import s from './home.module.scss';
 
-  render() {
-    return (
-      <h1>Home</h1>
-    );
-  }
-}
-
-export default HomePage;
+export default () => (
+  <div>
+    <Header />
+    <div className={s.contentContainer}>
+      <div>
+        <Link to="/prizes">
+          <div>
+            <h1>Prizes</h1>
+            <div>
+              <IconChevron direction="right" context="brand-dark-blue" />
+            </div>
+          </div>
+        </Link>
+      </div>
+      <div>
+        <Link to="/users">
+          <div>
+            <h1>Users</h1>
+            <div>
+              <IconChevron direction="right" context="brand-dark-blue" />
+            </div>
+          </div>
+        </Link>
+      </div>
+    </div>
+  </div>
+);
