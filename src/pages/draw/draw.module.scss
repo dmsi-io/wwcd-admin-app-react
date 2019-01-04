@@ -1,0 +1,84 @@
+@import '~@dmsi/wedgekit/dist/variables';
+
+.contentContainer {
+  width: 80%;
+  min-width: 200px;
+  margin: 0 auto;
+  padding: 10px;
+}
+.prizesHeader {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  border: 1px solid $sonic-silver;
+  border-radius: 10px 10px 0 0;
+  padding: 5px 10px;
+  background-color: $gainsboro;
+
+  h1 {
+    color: $raisin-black;
+  }
+}
+.prizesContainer {
+  .prizeContainer {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    border: 1px solid $sonic-silver;
+    border-top: none;
+    padding: 10px;
+    background-color: $alabaster;
+
+    .prizeInfoContainer {
+      flex: 1;
+
+      h3, p {
+        color: $raisin-black;
+      }
+    }
+
+    .ticketContiner {
+      margin-right: 10px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+
+      h4 {
+        color: $raisin-black;
+      }
+    }
+
+    .prizeImageContainer {
+      margin-right: 20px;
+
+      .prizeImage {
+        max-height: 100px;
+        max-width: 100px;
+      }
+    }
+  }
+}
+.modalContentContainer {
+  width: 90%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  margin: auto;
+  position: relative;
+
+  >span {
+    position: absolute;
+    top: 53%;
+    left: 50%;
+    -webkit-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+    font-size: 8em;
+    color: #fff;
+    text-align: center;
+    line-height: 0.9em;
+    text-shadow: -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 2px 2px 0 #000;
+  }
+}

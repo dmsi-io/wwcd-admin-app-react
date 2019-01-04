@@ -6,15 +6,17 @@ import {
   Redirect,
 } from 'react-router-dom';
 
+import 'video-react/dist/video-react.css';
 import '@dmsi/wedgekit/dist/wedgekit.css';
 
+import Draw from './pages/draw/draw';
 import Home from './pages/home/home';
 import Login from './pages/login/login';
 import PageNotFound from './pages/404/404';
 import Prize from './pages/prize/prize';
 import PrizesList from './pages/prizes/prizes';
-import Users from './pages/users/users';
 import User from './pages/user/user';
+import Users from './pages/users/users';
 
 import Firebase from './fire';
 
@@ -44,6 +46,7 @@ const App = () => (
       <Switch>
         <Route path="/login" exact component={Login} />
         <PrivateRoute path="/" exact component={Home} />
+        <PrivateRoute path="/draw" exact component={Draw} />
         <PrivateRoute path="/users" exact component={Users} />
         <PrivateRoute path="/user/:id?" component={User} />
         <PrivateRoute path="/prizes" exact component={PrizesList} />
