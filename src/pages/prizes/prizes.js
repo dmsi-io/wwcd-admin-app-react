@@ -22,27 +22,6 @@ class PrizesPage extends Component {
     const db = Firebase.firestore();
 
     const prizesRef = db.collection('prizes');
-    prizesRef.get()
-      .then((snapshot) => {
-        const prizes = snapshot.docs.map((prize) => ({
-          ...prize.data(),
-          id: prize.id,
-        })).sort((a, b) => {
-          if (a.title < b.title) {
-            return -1;
-          }
-          return a.title > b.title ? 1 : 0;
-        });
-
-        this.setState({
-          prizes,
-          loading: false,
-        });
-      })
-      .catch((err) => {
-        // eslint-disable-next-line no-console
-        console.log('Error getting documents', err);
-      });
 
     this.prizeUpdateUnsubscribe = prizesRef.onSnapshot({
       next: (snapshot) => {
@@ -58,11 +37,12 @@ class PrizesPage extends Component {
 
         this.setState({
           prizes,
+          loading: false,
         });
       },
       error: (err) => {
         // eslint-disable-next-line no-console
-        console.log('Error updating documents', err);
+        console.log('Error getting documents', err);
       },
     });
   }

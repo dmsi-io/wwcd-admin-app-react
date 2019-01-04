@@ -8,6 +8,13 @@ import Firebase from '../../fire';
 
 import s from './draw.module.scss';
 
+const sortPrizes = (a, b) => {
+  if (a.title < b.title) {
+    return -1;
+  }
+  return a.title > b.title ? 1 : 0;
+};
+
 class DrawPage extends Component {
   constructor(props) {
     super(props);
@@ -22,90 +29,56 @@ class DrawPage extends Component {
   componentDidMount = async () => {
     const db = Firebase.firestore();
 
-    const prizesRef = db.collection('prizes');
-    let prizesSnapshot = null;
-    try {
-      prizesSnapshot = await prizesRef.get();
-    } catch (err) {
-      // eslint-disable-next-line no-console
-      console.log('Error getting prizes', err);
-    }
+    const prizeInitialLoadPromise = new Promise((resolve) => {
+      const prizesRef = db.collection('prizes');
 
-    const ticketsRef = db.collection('tickets');
-    let ticketsSnapshot = null;
-    try {
-      ticketsSnapshot = await ticketsRef.get();
-    } catch (err) {
-      // eslint-disable-next-line no-console
-      console.log('Error getting tickets', err);
-    }
-
-    const tickets = ticketsSnapshot.docs.map((ticket) => ({ ...ticket.data(), id: ticket.id }));
-    const prizes = prizesSnapshot.docs.map((prize) => ({
-      ...prize.data(),
-      id: prize.id,
-      tickets: tickets.filter((ticket) => ticket.prize === prize.id),
-    })).sort((a, b) => {
-      if (a.title < b.title) {
-        return -1;
-      }
-      return a.title > b.title ? 1 : 0;
+      this.prizeUpdateUnsubscribe = prizesRef.onSnapshot({
+        next: (snapshot) => {
+          this.setState((prevState) => {
+            const prizes = snapshot.docs.map((prize) => ({
+              ...prize.data(),
+              id: prize.id,
+              tickets: prevState.tickets.filter((ticket) => ticket.prize.id === prize.id),
+            })).sort(sortPrizes);
+            return {
+              prizes,
+            };
+          }, resolve);
+        },
+        error: (err) => {
+          // eslint-disable-next-line no-console
+          console.log('Error updating prizes', err);
+        },
+      });
     });
 
-    this.setState({
-      prizes,
-      tickets,
-      loading: false,
+    const ticketInitialLoadPromise = new Promise((resolve) => {
+      const ticketsRef = db.collection('tickets');
+
+      this.ticketUpdateUnsubscribe = ticketsRef.onSnapshot({
+        next: (snapshot) => {
+          this.setState((prevState) => {
+            const tickets = snapshot.docs.map((ticket) => ({ ...ticket.data(), id: ticket.id }));
+            const prizes = prevState.prizes.map((prize) => ({
+              ...prize,
+              tickets: tickets.filter((ticket) => ticket.prize.id === prize.id),
+            })).sort(sortPrizes);
+
+            return {
+              tickets,
+              prizes,
+            };
+          }, resolve);
+        },
+        error: (err) => {
+          // eslint-disable-next-line no-console
+          console.log('Error updating prizes', err);
+        },
+      });
     });
 
-    this.prizeUpdateUnsubscribe = prizesRef.onSnapshot({
-      next: (snapshot) => {
-        this.setState((prevState) => {
-          const prizes2 = snapshot.docs.map((prize) => ({
-            ...prize.data(),
-            id: prize.id,
-            tickets: prevState.tickets.filter((ticket) => ticket.prize === prize.id),
-          })).sort((a, b) => {
-            if (a.title < b.title) {
-              return -1;
-            }
-            return a.title > b.title ? 1 : 0;
-          });
-          return {
-            prizes: prizes2,
-          };
-        });
-      },
-      error: (err) => {
-        // eslint-disable-next-line no-console
-        console.log('Error updating prizes', err);
-      },
-    });
-
-    this.ticketUpdateUnsubscribe = ticketsRef.onSnapshot({
-      next: (snapshot) => {
-        this.setState((prevState) => {
-          const tickets2 = snapshot.docs.map((ticket) => ({ ...ticket.data(), id: ticket.id }));
-          const prizes2 = prevState.prizes.map((prize) => ({
-            ...prize,
-            tickets: tickets.filter((ticket) => ticket.prize === prize.id),
-          })).sort((a, b) => {
-            if (a.title < b.title) {
-              return -1;
-            }
-            return a.title > b.title ? 1 : 0;
-          });
-
-          return {
-            tickets: tickets2,
-            prizes: prizes2,
-          };
-        });
-      },
-      error: (err) => {
-        // eslint-disable-next-line no-console
-        console.log('Error updating prizes', err);
-      },
+    Promise.all([prizeInitialLoadPromise, ticketInitialLoadPromise]).then(() => {
+      this.setState({ loading: false });
     });
   }
 
@@ -122,15 +95,10 @@ class DrawPage extends Component {
     if (prize.tickets.length > 0) {
       const winningTicket = prize.tickets[Math.floor(Math.random() * prize.tickets.length)];
 
-      const userId = winningTicket.user;
+      const result = await winningTicket.user.get();
 
-      const db = Firebase.firestore();
-
-      const usersRef = db.collection('users');
-      const result = await usersRef.where('username', '==', userId).get();
-
-      if (!result.empty) {
-        const user = result.docs[0].data();
+      if (result.exists) {
+        const user = result.data();
 
         this.setState({
           prizeModal: true,

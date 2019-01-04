@@ -21,29 +21,19 @@ class UsersPage extends Component {
   componentDidMount() {
     const db = Firebase.firestore();
 
-    const sort = (docs) => docs.slice(0).sort((a, b) => {
-      const aData = a.data();
-      const bData = b.data();
-      const aName = `${aData.lastName}, ${aData.firstName}`;
-      const bName = `${bData.lastName}, ${bData.firstName}`;
+    const sort = (docs) => docs.sort((a, b) => {
+      const aName = `${a.lastName}, ${a.firstName}`;
+      const bName = `${b.lastName}, ${b.firstName}`;
       return aName < bName ? -1 : aName > bName ? 1 : 0; // eslint-disable-line
     });
 
     const usersRef = db.collection('users');
-    usersRef.get().then((snapshot) => {
-      this.setState({
-        users: sort(snapshot.docs),
-        loading: false,
-      });
-    }, (err) => {
-      // eslint-disable-next-line no-console
-      console.log('Error getting documents', err);
-    });
 
     this.usersUpdateUnsubscribe = usersRef.onSnapshot({
       next: (snapshot) => {
         this.setState({
-          users: sort(snapshot.docs),
+          users: sort(snapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id }))),
+          loading: false,
         });
       },
       error: (err) => {
@@ -77,19 +67,16 @@ class UsersPage extends Component {
               </span>
             </div>
             <div className={s.usersContainer}>
-              {this.state.users.map((user) => {
-                const data = user.data();
-                return (
-                  <Link key={user.id} to={`/user/${user.id}`}>
-                    <div className={s.userContainer}>
-                      <div className={s.userInfoContainer}>
-                        <h3>{data.lastName}, {data.firstName}</h3>
-                        <p>Tickets: {data.tickets}</p>
-                      </div>
+              {this.state.users.map((user) => (
+                <Link key={user.id} to={`/user/${user.id}`}>
+                  <div className={s.userContainer}>
+                    <div className={s.userInfoContainer}>
+                      <h3>{user.lastName}, {user.firstName}</h3>
+                      <p>Tickets: {user.tickets}</p>
                     </div>
-                  </Link>
-                );
-              })}
+                  </div>
+                </Link>
+              ))}
             </div>
           </div>
         </div>
