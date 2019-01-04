@@ -13,6 +13,8 @@ import Login from './pages/login/login';
 import PageNotFound from './pages/404/404';
 import Prize from './pages/prize/prize';
 import PrizesList from './pages/prizes/prizes';
+import Users from './pages/users/users';
+import User from './pages/user/user';
 
 import Firebase from './fire';
 
@@ -42,6 +44,8 @@ const App = () => (
       <Switch>
         <Route path="/login" exact component={Login} />
         <PrivateRoute path="/" exact component={Home} />
+        <PrivateRoute path="/users" exact component={Users} />
+        <PrivateRoute path="/user/:id?" component={User} />
         <PrivateRoute path="/prizes" exact component={PrizesList} />
         <PrivateRoute path="/prize/:id?" component={Prize} />
         <Route component={PageNotFound} />
