@@ -103,8 +103,30 @@ class UserPage extends Component {
     if (id) {
       const db = Firebase.firestore();
       const usersRef = db.collection('users');
+      const userDocRef = usersRef.doc(id);
+
       try {
-        await usersRef.doc(id).delete();
+        const userSnapshot = await userDocRef.get();
+        if (userSnapshot.exists) {
+          const user = userSnapshot.data();
+          const ticketsRef = db.collection('tickets');
+          const ticketsSnapshot = await ticketsRef.where('user', '==', user.username).get();
+
+          if (!ticketsSnapshot.empty) {
+            const batch = db.batch();
+            ticketsSnapshot.forEach((doc) => {
+              batch.delete(doc.ref);
+            });
+            try {
+              await batch.commit();
+            } catch (err) {
+              // eslint-disable-next-line no-console
+              console.log('Error deleting tickets', err);
+            }
+          }
+
+          await userDocRef.delete();
+        }
       } catch (err) {
         // eslint-disable-next-line no-console
         console.log('Error deleting user', err);

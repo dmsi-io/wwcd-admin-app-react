@@ -23,6 +23,14 @@
         max-width: 200px;
         max-width: 200px;
       }
+
+      .selectedCategory {
+        flex-shrink: 1;
+
+        .popover {
+          top: 0 !important;
+        }
+      }
     }
 
     .buttonHolder {
