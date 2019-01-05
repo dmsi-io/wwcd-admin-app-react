@@ -17,6 +17,7 @@ import Prize from './pages/prize/prize';
 import PrizesList from './pages/prizes/prizes';
 import User from './pages/user/user';
 import Users from './pages/users/users';
+import ExportUsers from './pages/exportusers/exportusers';
 
 import Firebase from './fire';
 
@@ -49,6 +50,7 @@ const App = () => (
         <PrivateRoute path="/draw" exact component={Draw} />
         <PrivateRoute path="/users" exact component={Users} />
         <PrivateRoute path="/user/:id?" component={User} />
+        <PrivateRoute path="/users/export" exact component={ExportUsers} />
         <PrivateRoute path="/prizes" exact component={PrizesList} />
         <PrivateRoute path="/prize/:id?" component={Prize} />
         <Route component={PageNotFound} />

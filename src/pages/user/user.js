@@ -75,7 +75,11 @@ class UserPage extends Component {
   onFormSubmit = async (e) => {
     e.preventDefault();
 
-    this.setState({ loading: true, ticketsInvalid: false });
+    this.setState({
+      loading: true,
+      ticketsInvalid: false,
+      usernameInvalid: false,
+    });
 
     const { id } = this.props.match.params;
 
@@ -90,10 +94,21 @@ class UserPage extends Component {
       return;
     }
 
+    if (!id) {
+      const usernameQuery = await usersRef.where('username', '==', this.state.username.toLowerCase()).get();
+      if (!usernameQuery.empty) {
+        this.setState({
+          usernameInvalid: true,
+          loading: false,
+        });
+        return;
+      }
+    }
+
     const data = {
       firstName: this.state.firstName,
       lastName: this.state.lastName,
-      username: this.state.username,
+      username: this.state.username.toLowerCase(),
       password: this.state.password,
       tickets: Number(this.state.tickets),
     };
@@ -198,10 +213,11 @@ class UserPage extends Component {
                 size="large"
                 value={this.state.username}
                 onChange={this.onInputChange}
+                error={this.state.usernameInvalid ? 'Username already taken' : ''}
               />
               <Button
                 onClick={this.onGenerateUsername}
-                style={{ marginTop: '5px' }}
+                style={{ marginTop: '15px' }}
               >
                 Generate Username
               </Button>
@@ -220,7 +236,7 @@ class UserPage extends Component {
               />
               <Button
                 onClick={() => this.setState({ password: generatePassword() })}
-                style={{ marginTop: '5px' }}
+                style={{ marginTop: '15px' }}
               >
                 Generate Password
               </Button>

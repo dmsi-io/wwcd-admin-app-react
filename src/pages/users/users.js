@@ -58,13 +58,22 @@ class UsersPage extends Component {
           <div>
             <div className={s.usersHeader}>
               <h1>Users</h1>
-              <span>
-                <Link to="/user">
-                  <Button>
-                    + Add User
-                  </Button>
-                </Link>
-              </span>
+              <div>
+                <span style={{ marginRight: '10px' }}>
+                  <Link to="/users/export">
+                    <Button>
+                      Export Users
+                    </Button>
+                  </Link>
+                </span>
+                <span>
+                  <Link to="/user">
+                    <Button>
+                      + Add User
+                    </Button>
+                  </Link>
+                </span>
+              </div>
             </div>
             <div className={s.usersContainer}>
               {this.state.users.map((user) => (
