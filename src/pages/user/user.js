@@ -10,8 +10,8 @@ import Header from '../../components/header/header';
 import s from './user.module.scss';
 
 const generatePassword = () => {
-  const length = 8;
-  const charset = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  const length = 5;
+  const charset = 'abcdefghjkmnpqrstuvwxyzABCDEFGHIJKLMNPQRSTUVWXYZ23456789';
   let retVal = '';
   for (let i = 0; i < length; ++i) {
     retVal += charset.charAt(Math.floor(Math.random() * charset.length));
