@@ -26,6 +26,7 @@
 
       .selectedCategory {
         flex-shrink: 1;
+        min-width: 150px;
 
         .popover {
           top: 0 !important;

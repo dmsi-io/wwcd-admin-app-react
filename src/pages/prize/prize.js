@@ -62,7 +62,7 @@ class PrizePage extends Component {
     promises.push(categoriesRef.get().then((snapshot) => {
       const categories = snapshot.docs.map((category) => ({
         display: category.data().name,
-        id: category.data().name,
+        id: category.data().id,
       }));
       this.setState({ categories: [{ id: '', display: 'Select a Category' }, ...categories] });
     }, (err) => {
