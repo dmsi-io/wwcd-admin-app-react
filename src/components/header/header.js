@@ -17,18 +17,18 @@ const header = (props) => {
         <h2>WWCD</h2>
       </Link>
       <div>
-        <span>
-          Hello {currentUser.displayName || currentUser.email}
-        </span>
+        <span>Hello {currentUser.displayName || currentUser.email}</span>
         <Button
           onClick={() => {
-            Firebase.auth().signOut().then(
-              () => props.history.push('/login'),
-              (err) => {
-                // eslint-disable-next-line no-console
-                console.log('Error signing out', err);
-              },
-            );
+            Firebase.auth()
+              .signOut()
+              .then(
+                () => props.history.push('/login'),
+                (err) => {
+                  // eslint-disable-next-line no-console
+                  console.log('Error signing out', err);
+                },
+              );
           }}
         >
           Logout

@@ -35,11 +35,13 @@ class DrawPage extends Component {
       this.prizeUpdateUnsubscribe = prizesRef.onSnapshot({
         next: (snapshot) => {
           this.setState((prevState) => {
-            const prizes = snapshot.docs.map((prize) => ({
-              ...prize.data(),
-              id: prize.id,
-              tickets: prevState.tickets.filter((ticket) => ticket.prize.id === prize.id),
-            })).sort(sortPrizes);
+            const prizes = snapshot.docs
+              .map((prize) => ({
+                ...prize.data(),
+                id: prize.id,
+                tickets: prevState.tickets.filter((ticket) => ticket.prize.id === prize.id),
+              }))
+              .sort(sortPrizes);
             return {
               prizes,
             };
@@ -59,10 +61,12 @@ class DrawPage extends Component {
         next: (snapshot) => {
           this.setState((prevState) => {
             const tickets = snapshot.docs.map((ticket) => ({ ...ticket.data(), id: ticket.id }));
-            const prizes = prevState.prizes.map((prize) => ({
-              ...prize,
-              tickets: tickets.filter((ticket) => ticket.prize.id === prize.id),
-            })).sort(sortPrizes);
+            const prizes = prevState.prizes
+              .map((prize) => ({
+                ...prize,
+                tickets: tickets.filter((ticket) => ticket.prize.id === prize.id),
+              }))
+              .sort(sortPrizes);
 
             return {
               tickets,
@@ -80,7 +84,7 @@ class DrawPage extends Component {
     Promise.all([prizeInitialLoadPromise, ticketInitialLoadPromise]).then(() => {
       this.setState({ loading: false });
     });
-  }
+  };
 
   componentWillUnmount() {
     if (this.prizeUpdateUnsubscribe) {
@@ -100,43 +104,46 @@ class DrawPage extends Component {
       if (result.exists) {
         const user = result.data();
 
-        this.setState({
+        this.setState(
+          {
+            prizeModal: true,
+            winnerFirstName: '',
+            winnerLastName: '',
+          },
+          () => {
+            setTimeout(() => {
+              this.setState({
+                winnerFirstName: user.firstName,
+                winnerLastName: user.lastName,
+              });
+            }, 2500);
+          },
+        );
+      }
+    } else {
+      this.setState(
+        {
           prizeModal: true,
           winnerFirstName: '',
           winnerLastName: '',
-        }, () => {
+        },
+        () => {
           setTimeout(() => {
             this.setState({
-              winnerFirstName: user.firstName,
-              winnerLastName: user.lastName,
+              winnerFirstName: 'No Tickets',
+              winnerLastName: 'Entered',
             });
           }, 2500);
-        });
-      }
-    } else {
-      this.setState({
-        prizeModal: true,
-        winnerFirstName: '',
-        winnerLastName: '',
-      }, () => {
-        setTimeout(() => {
-          this.setState({
-            winnerFirstName: 'No Tickets',
-            winnerLastName: 'Entered',
-          });
-        }, 2500);
-      });
+        },
+      );
     }
-  }
+  };
 
   render() {
     return (
       <div>
-        {this.state.prizeModal &&
-          <Modal
-            fullscreen
-            onExit={() => this.setState({ prizeModal: false })}
-          >
+        {this.state.prizeModal && (
+          <Modal fullscreen onExit={() => this.setState({ prizeModal: false })}>
             <div className={s.modalContentContainer}>
               <Player
                 autoPlay
@@ -145,11 +152,13 @@ class DrawPage extends Component {
                 <ControlBar disableCompletely />
               </Player>
               <span className={s.winnerText}>
-                {this.state.winnerFirstName}<br />{this.state.winnerLastName}
+                {this.state.winnerFirstName}
+                <br />
+                {this.state.winnerLastName}
               </span>
             </div>
           </Modal>
-        }
+        )}
         <Header />
         {this.state.loading && <Loading />}
         <div className={s.contentContainer}>
@@ -167,16 +176,11 @@ class DrawPage extends Component {
                   onKeyPress={() => {}}
                   className={s.prizeContainer}
                 >
-                  {
-                    prize.image !== '' &&
+                  {prize.image !== '' && (
                     <div className={s.prizeImageContainer}>
-                      <img
-                        className={s.prizeImage}
-                        src={prize.image}
-                        alt="Prize"
-                      />
+                      <img className={s.prizeImage} src={prize.image} alt="Prize" />
                     </div>
-                  }
+                  )}
                   <div className={s.prizeInfoContainer}>
                     <h3>{prize.title}</h3>
                     <p>{prize.description}</p>

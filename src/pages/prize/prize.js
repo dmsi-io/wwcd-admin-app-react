@@ -38,38 +38,51 @@ class PrizePage extends Component {
 
     if (id) {
       const prizesRef = db.collection('prizes');
-      promises.push(prizesRef.doc(id).get().then((snapshot) => {
-        if (snapshot.exists) {
-          const data = snapshot.data();
-          this.setState({
-            title: data.title,
-            description: data.description,
-            image: data.image,
-            origImage: data.image,
-            selectedCategory: data.category,
-          });
-        } else {
-          this.setState({ notFound: true });
-        }
-      }, (err) => {
-        // eslint-disable-next-line no-console
-        console.log('Error getting prize', err);
-        this.setState({ notFound: true });
-      }));
+      promises.push(
+        prizesRef
+          .doc(id)
+          .get()
+          .then(
+            (snapshot) => {
+              if (snapshot.exists) {
+                const data = snapshot.data();
+                this.setState({
+                  title: data.title,
+                  description: data.description,
+                  image: data.image,
+                  origImage: data.image,
+                  selectedCategory: data.category,
+                });
+              } else {
+                this.setState({ notFound: true });
+              }
+            },
+            (err) => {
+              // eslint-disable-next-line no-console
+              console.log('Error getting prize', err);
+              this.setState({ notFound: true });
+            },
+          ),
+      );
     }
 
     const categoriesRef = db.collection('categories');
-    promises.push(categoriesRef.get().then((snapshot) => {
-      const categories = snapshot.docs.map((category) => ({
-        display: category.data().name,
-        id: category.data().id,
-      }));
-      this.setState({ categories: [{ id: '', display: 'Select a Category' }, ...categories] });
-    }, (err) => {
-      // eslint-disable-next-line no-console
-      console.log('Error getting categories', err);
-      this.setState({ notFound: true });
-    }));
+    promises.push(
+      categoriesRef.get().then(
+        (snapshot) => {
+          const categories = snapshot.docs.map((category) => ({
+            display: category.data().name,
+            id: category.data().id,
+          }));
+          this.setState({ categories: [{ id: '', display: 'Select a Category' }, ...categories] });
+        },
+        (err) => {
+          // eslint-disable-next-line no-console
+          console.log('Error getting categories', err);
+          this.setState({ notFound: true });
+        },
+      ),
+    );
 
     Promise.all(promises).then(
       () => this.setState({ loading: false }),
@@ -81,7 +94,7 @@ class PrizePage extends Component {
     this.setState({
       [name]: value,
     });
-  }
+  };
 
   onFileChange = (e) => {
     e.preventDefault();
@@ -95,7 +108,7 @@ class PrizePage extends Component {
     } else {
       this.setState({ image: '' });
     }
-  }
+  };
 
   onFormSubmit = async (e) => {
     e.preventDefault();
@@ -104,7 +117,9 @@ class PrizePage extends Component {
 
     let category = '';
     if (this.state.selectedCategory !== '') {
-      const categoryObj = this.state.categories.find((cat) => cat.id === this.state.selectedCategory);
+      const categoryObj = this.state.categories.find(
+        (cat) => cat.id === this.state.selectedCategory,
+      );
 
       if (categoryObj) {
         category = categoryObj.id;
@@ -157,14 +172,16 @@ class PrizePage extends Component {
       category,
     };
 
-    if (id) { // update existing record
+    if (id) {
+      // update existing record
       await prizesRef.doc(id).set(data);
-    } else { // new record
+    } else {
+      // new record
       await prizesRef.add(data);
     }
 
     this.setState({ complete: true });
-  }
+  };
 
   onDeletePrize = async () => {
     const { id } = this.props.match.params;
@@ -197,16 +214,16 @@ class PrizePage extends Component {
       }
       this.setState({ complete: true });
     }
-  }
+  };
 
   render() {
     return (
       <div className={s.prizeContainer}>
         <Header />
         {this.state.loading && <Loading />}
-        {this.state.notFound || this.state.complete ?
+        {this.state.notFound || this.state.complete ? (
           <Redirect to="/prizes" />
-          :
+        ) : (
           <form id="prizeForm" className={s.contentContainer} onSubmit={this.onFormSubmit}>
             <h1>Prize</h1>
             <fieldset>
@@ -261,25 +278,30 @@ class PrizePage extends Component {
             <fieldset>
               <label htmlFor="image">Image</label>
               <br />
-              {this.state.image !== undefined && this.state.image !== '' &&
-                <img
-                  alt="Prize"
-                  src={this.state.image}
-                />
-              }
+              {this.state.image !== undefined && this.state.image !== '' && (
+                <img alt="Prize" src={this.state.image} />
+              )}
               <br />
-              <input ref={this.imageInputRef} name="image" type="file" accept="image/*" onChange={this.onFileChange} />
+              <input
+                ref={this.imageInputRef}
+                name="image"
+                type="file"
+                accept="image/*"
+                onChange={this.onFileChange}
+              />
             </fieldset>
             <div className={s.buttonHolder}>
-              <button type="submit" className={s.saveButton}>Save</button>
-              {this.props.match.params.id &&
+              <button type="submit" className={s.saveButton}>
+                Save
+              </button>
+              {this.props.match.params.id && (
                 <Button onClick={this.onDeletePrize} className={s.deleteButton}>
                   Delete Prize
                 </Button>
-              }
+              )}
             </div>
           </form>
-        }
+        )}
       </div>
     );
   }

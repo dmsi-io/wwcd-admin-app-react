@@ -43,26 +43,32 @@ class UserPage extends Component {
     if (id) {
       const db = Firebase.firestore();
       const usersRef = db.collection('users');
-      usersRef.doc(id).get().then((snapshot) => {
-        if (snapshot.exists) {
-          const data = snapshot.data();
-          this.setState({
-            loading: false,
-            firstName: data.firstName,
-            lastName: data.lastName,
-            username: data.username,
-            password: data.password,
-            tickets: `${data.tickets}`,
-            ticketsInvalid: false,
-          });
-        } else {
-          this.setState({ notFound: true, loading: false });
-        }
-      }, (err) => {
-        // eslint-disable-next-line no-console
-        console.log('Error getting user', err);
-        this.setState({ notFound: true, loading: false });
-      });
+      usersRef
+        .doc(id)
+        .get()
+        .then(
+          (snapshot) => {
+            if (snapshot.exists) {
+              const data = snapshot.data();
+              this.setState({
+                loading: false,
+                firstName: data.firstName,
+                lastName: data.lastName,
+                username: data.username,
+                password: data.password,
+                tickets: `${data.tickets}`,
+                ticketsInvalid: false,
+              });
+            } else {
+              this.setState({ notFound: true, loading: false });
+            }
+          },
+          (err) => {
+            // eslint-disable-next-line no-console
+            console.log('Error getting user', err);
+            this.setState({ notFound: true, loading: false });
+          },
+        );
     }
   }
 
@@ -70,7 +76,7 @@ class UserPage extends Component {
     this.setState({
       [name]: value,
     });
-  }
+  };
 
   onFormSubmit = async (e) => {
     e.preventDefault();
@@ -95,7 +101,9 @@ class UserPage extends Component {
     }
 
     if (!id) {
-      const usernameQuery = await usersRef.where('username', '==', this.state.username.toLowerCase()).get();
+      const usernameQuery = await usersRef
+        .where('username', '==', this.state.username.toLowerCase())
+        .get();
       if (!usernameQuery.empty) {
         this.setState({
           usernameInvalid: true,
@@ -113,14 +121,16 @@ class UserPage extends Component {
       tickets: Number(this.state.tickets),
     };
 
-    if (id) { // update existing record
+    if (id) {
+      // update existing record
       await usersRef.doc(id).set(data);
-    } else { // new record
+    } else {
+      // new record
       await usersRef.add(data);
     }
 
     this.setState({ complete: true });
-  }
+  };
 
   onDeleteUser = async () => {
     const { id } = this.props.match.params;
@@ -158,22 +168,24 @@ class UserPage extends Component {
       }
       this.setState({ complete: true });
     }
-  }
+  };
 
   onGenerateUsername = () => {
     if (this.state.firstName.length > 0 && this.state.lastName.length > 0) {
-      this.setState({ username: `${this.state.firstName.slice(0, 1)}${this.state.lastName}`.toLowerCase() });
+      this.setState({
+        username: `${this.state.firstName.slice(0, 1)}${this.state.lastName}`.toLowerCase(),
+      });
     }
-  }
+  };
 
   render() {
     return (
       <div className={s.userContainer}>
         <Header />
         {this.state.loading && <Loading />}
-        {this.state.notFound || this.state.complete ?
+        {this.state.notFound || this.state.complete ? (
           <Redirect to="/users" />
-          :
+        ) : (
           <form id="userForm" className={s.contentContainer} onSubmit={this.onFormSubmit}>
             <h1>User</h1>
             <fieldset>
@@ -215,10 +227,7 @@ class UserPage extends Component {
                 onChange={this.onInputChange}
                 error={this.state.usernameInvalid ? 'Username already taken' : ''}
               />
-              <Button
-                onClick={this.onGenerateUsername}
-                style={{ marginTop: '15px' }}
-              >
+              <Button onClick={this.onGenerateUsername} style={{ marginTop: '15px' }}>
                 Generate Username
               </Button>
             </fieldset>
@@ -256,15 +265,17 @@ class UserPage extends Component {
               />
             </fieldset>
             <div className={s.buttonHolder}>
-              <button type="submit" className={s.saveButton}>Save</button>
-              {this.props.match.params.id &&
+              <button type="submit" className={s.saveButton}>
+                Save
+              </button>
+              {this.props.match.params.id && (
                 <Button onClick={this.onDeleteUser} className={s.deleteButton}>
                   Delete User
                 </Button>
-              }
+              )}
             </div>
           </form>
-        }
+        )}
       </div>
     );
   }

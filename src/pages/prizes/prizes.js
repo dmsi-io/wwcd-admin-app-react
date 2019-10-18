@@ -25,15 +25,17 @@ class PrizesPage extends Component {
 
     this.prizeUpdateUnsubscribe = prizesRef.onSnapshot({
       next: (snapshot) => {
-        const prizes = snapshot.docs.map((prize) => ({
-          ...prize.data(),
-          id: prize.id,
-        })).sort((a, b) => {
-          if (a.title < b.title) {
-            return -1;
-          }
-          return a.title > b.title ? 1 : 0;
-        });
+        const prizes = snapshot.docs
+          .map((prize) => ({
+            ...prize.data(),
+            id: prize.id,
+          }))
+          .sort((a, b) => {
+            if (a.title < b.title) {
+              return -1;
+            }
+            return a.title > b.title ? 1 : 0;
+          });
 
         this.setState({
           prizes,
@@ -64,9 +66,7 @@ class PrizesPage extends Component {
               <h1>Prizes</h1>
               <span>
                 <Link to="/prize">
-                  <Button>
-                    + Add Prize
-                  </Button>
+                  <Button>+ Add Prize</Button>
                 </Link>
               </span>
             </div>
@@ -74,22 +74,17 @@ class PrizesPage extends Component {
               {this.state.prizes.map((prize) => (
                 <Link key={prize.id} to={`/prize/${prize.id}`}>
                   <div className={s.prizeContainer}>
-                    {
-                      prize.image !== '' &&
+                    {prize.image !== '' && (
                       <div className={s.prizeImageContainer}>
-                        <img
-                          className={s.prizeImage}
-                          src={prize.image}
-                          alt="Prize"
-                        />
+                        <img className={s.prizeImage} src={prize.image} alt="Prize" />
                       </div>
-                    }
+                    )}
                     <div className={s.prizeInfoContainer}>
                       <h3>{prize.title}</h3>
                       <p>{prize.description}</p>
-                      {prize.category !== undefined && prize.category !== '' &&
+                      {prize.category !== undefined && prize.category !== '' && (
                         <p>Category: {prize.category}</p>
-                      }
+                      )}
                     </div>
                   </div>
                 </Link>

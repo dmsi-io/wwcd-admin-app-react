@@ -18,11 +18,12 @@ class ExportUsersPage extends Component {
   componentDidMount() {
     const db = Firebase.firestore();
 
-    const sort = (docs) => docs.sort((a, b) => {
-      const aName = `${a.lastName}, ${a.firstName}`;
-      const bName = `${b.lastName}, ${b.firstName}`;
-      return aName < bName ? -1 : aName > bName ? 1 : 0; // eslint-disable-line
-    });
+    const sort = (docs) =>
+      docs.sort((a, b) => {
+        const aName = `${a.lastName}, ${a.firstName}`;
+        const bName = `${b.lastName}, ${b.firstName}`;
+        return aName < bName ? -1 : aName > bName ? 1 : 0; // eslint-disable-line
+      });
 
     const usersRef = db.collection('users');
 
@@ -61,7 +62,9 @@ class ExportUsersPage extends Component {
         >
           <div>First Name,Last Name,Username,Password</div>
           {this.state.users.map((user) => (
-            <div key={user.id}>{user.firstName},{user.lastName},{user.username},{user.password}</div>
+            <div key={user.id}>
+              {user.firstName},{user.lastName},{user.username},{user.password}
+            </div>
           ))}
         </div>
       </div>

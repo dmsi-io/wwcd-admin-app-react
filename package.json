@@ -3,24 +3,27 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@dmsi/wedgekit": "^8.6.3",
-    "firebase": "^5.7.2",
-    "lodash": "^4.17.11",
-    "moment": "^2.23.0",
-    "node-sass": "^4.11.0",
-    "prop-types": "^15.6.2",
-    "react": "^16.7.0",
-    "react-dom": "^16.7.0",
-    "react-router-dom": "^4.3.1",
-    "react-scripts": "2.1.2",
-    "uuid": "^3.3.2",
-    "video-react": "^0.13.1"
+    "@dmsi/wedgekit": "^9.2.0",
+    "axios": "^0.19.0",
+    "history": "^4.10.1",
+    "lodash": "^4.17.15",
+    "moment": "^2.24.0",
+    "node-sass": "^4.12.0",
+    "prop-types": "^15.7.2",
+    "react": "^16.10.2",
+    "react-dom": "^16.10.2",
+    "react-router-dom": "^5.1.2",
+    "react-scripts": "3.2.0",
+    "uuid": "^3.3.3",
+    "video-react": "^0.14.1"
   },
+  "prettier": "@dmsi/prettier-config",
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "prettify": "prettier --write \"./**/*.js\""
   },
   "browserslist": [
     ">0.2%",
@@ -29,6 +32,12 @@
     "not op_mini all"
   ],
   "devDependencies": {
-    "@dmsi/eslint-config": "^3.0.0"
+    "@dmsi/eslint-config": "^3.0.0",
+    "@dmsi/prettier-config": "^1.3.0",
+    "eslint": "^6.5.1",
+    "eslint-config-prettier": "^6.4.0",
+    "eslint-plugin-react": "^7.16.0",
+    "eslint-plugin-react-hooks": "^2.1.2",
+    "prettier": "^1.18.2"
   }
 }

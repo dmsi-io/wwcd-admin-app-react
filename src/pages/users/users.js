@@ -21,11 +21,12 @@ class UsersPage extends Component {
   componentDidMount() {
     const db = Firebase.firestore();
 
-    const sort = (docs) => docs.sort((a, b) => {
-      const aName = `${a.lastName}, ${a.firstName}`;
-      const bName = `${b.lastName}, ${b.firstName}`;
-      return aName < bName ? -1 : aName > bName ? 1 : 0; // eslint-disable-line
-    });
+    const sort = (docs) =>
+      docs.sort((a, b) => {
+        const aName = `${a.lastName}, ${a.firstName}`;
+        const bName = `${b.lastName}, ${b.firstName}`;
+        return aName < bName ? -1 : aName > bName ? 1 : 0; // eslint-disable-line
+      });
 
     const usersRef = db.collection('users');
 
@@ -61,16 +62,12 @@ class UsersPage extends Component {
               <div>
                 <span style={{ marginRight: '10px' }}>
                   <Link to="/users/export">
-                    <Button>
-                      Export Users
-                    </Button>
+                    <Button>Export Users</Button>
                   </Link>
                 </span>
                 <span>
                   <Link to="/user">
-                    <Button>
-                      + Add User
-                    </Button>
+                    <Button>+ Add User</Button>
                   </Link>
                 </span>
               </div>
@@ -80,7 +77,9 @@ class UsersPage extends Component {
                 <Link key={user.id} to={`/user/${user.id}`}>
                   <div className={s.userContainer}>
                     <div className={s.userInfoContainer}>
-                      <h3>{user.lastName}, {user.firstName}</h3>
+                      <h3>
+                        {user.lastName}, {user.firstName}
+                      </h3>
                       <p>Tickets: {user.tickets}</p>
                     </div>
                   </div>
