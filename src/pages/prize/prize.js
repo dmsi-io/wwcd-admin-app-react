@@ -1,11 +1,10 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Redirect } from 'react-router-dom';
-import uuid from 'uuid/v1';
 
-import { Loading, TextInput, Button, NewSelect, Option } from '@dmsi/wedgekit';
+import { Loading, TextInput, Button, NewSelect, Option, Alerts } from '@dmsi/wedgekit';
 
-import Firebase from '../../fire';
+import Api from '../../utils/api';
 import Header from '../../components/header/header';
 
 import s from './prize.module.scss';
@@ -24,6 +23,7 @@ class PrizePage extends Component {
       origImage: '',
       selectedCategory: '',
       title: '',
+      errors: [],
     };
 
     this.imageInputRef = React.createRef();
@@ -34,54 +34,49 @@ class PrizePage extends Component {
 
     const promises = [];
 
-    const db = Firebase.firestore();
-
     if (id) {
-      const prizesRef = db.collection('prizes');
       promises.push(
-        prizesRef
-          .doc(id)
-          .get()
-          .then(
-            (snapshot) => {
-              if (snapshot.exists) {
-                const data = snapshot.data();
-                this.setState({
-                  title: data.title,
-                  description: data.description,
-                  image: data.image,
-                  origImage: data.image,
-                  selectedCategory: data.category,
-                });
-              } else {
-                this.setState({ notFound: true });
-              }
-            },
-            (err) => {
-              // eslint-disable-next-line no-console
-              console.log('Error getting prize', err);
-              this.setState({ notFound: true });
-            },
-          ),
+        Api.get(`/prizes/${id}`).then(([err, data]) => {
+          if (err) {
+            // eslint-disable-next-line no-console
+            console.log('Error getting prize', err);
+            this.setState({ notFound: true });
+            return;
+          }
+
+          if (data && data.data && data.data.attributes) {
+            const a = data.data.attributes;
+            this.setState({
+              title: a.title,
+              description: a.description,
+              image: a.image,
+              origImage: a.image,
+              selectedCategory: a.categoryId,
+            });
+          } else {
+            this.setState({ notFound: true });
+          }
+        }),
       );
     }
 
-    const categoriesRef = db.collection('categories');
     promises.push(
-      categoriesRef.get().then(
-        (snapshot) => {
-          const categories = snapshot.docs.map((category) => ({
-            display: category.data().name,
-            id: category.data().id,
-          }));
-          this.setState({ categories: [{ id: '', display: 'Select a Category' }, ...categories] });
-        },
-        (err) => {
+      Api.get('/categories').then(([err, data]) => {
+        if (err) {
           // eslint-disable-next-line no-console
           console.log('Error getting categories', err);
           this.setState({ notFound: true });
-        },
-      ),
+          return;
+        }
+
+        if (data && data.data) {
+          const categories = data.data.map((category) => ({
+            display: category.attributes.name,
+            id: category.attributes.id,
+          }));
+          this.setState({ categories: [{ id: '', display: 'Select a Category' }, ...categories] });
+        }
+      }),
     );
 
     Promise.all(promises).then(
@@ -115,69 +110,50 @@ class PrizePage extends Component {
 
     this.setState({ loading: true });
 
-    let category = '';
-    if (this.state.selectedCategory !== '') {
-      const categoryObj = this.state.categories.find(
-        (cat) => cat.id === this.state.selectedCategory,
-      );
+    const category = this.state.selectedCategory;
 
-      if (categoryObj) {
-        category = categoryObj.id;
-      }
+    if (!category && category !== 0) {
+      this.setState({ errors: ['A category must be selected'], loading: false });
+      return;
+    }
+
+    const { title } = this.state;
+
+    if (!title) {
+      this.setState({ errors: ['The prize must have a title'], loading: false });
+      return;
     }
 
     const { id } = this.props.match.params;
 
-    const db = Firebase.firestore();
-    const prizesRef = db.collection('prizes');
+    const formData = new FormData();
 
-    const storage = Firebase.storage();
+    formData.append('title', this.state.title);
+    formData.append('description', this.state.description);
+    formData.append('categoryId', category);
 
-    if (this.state.origImage !== '' && this.state.image !== this.state.origImage) {
-      const imageRef = storage.refFromURL(this.state.origImage);
-
-      try {
-        await imageRef.delete();
-      } catch (err) {
-        // eslint-disable-next-line no-console
-        console.log('Error deleting old photo', err);
+    if (this.state.image !== this.state.origImage) {
+      if (this.state.image) {
+        formData.append('image', this.imageFile);
+      } else if (this.state.origImage) {
+        formData.append('removeImage', true);
       }
     }
 
-    let { image } = this.state;
-
-    if (this.imageFile) {
-      const storageRef = storage.ref();
-      const fileRef = storageRef.child(`photos/${uuid()}`);
-
-      try {
-        await fileRef.put(this.imageFile);
-      } catch (err) {
-        // eslint-disable-next-line no-console
-        console.log('Error uploading new photo', err);
-      }
-
-      try {
-        image = await fileRef.getDownloadURL();
-      } catch (err) {
-        // eslint-disable-next-line no-console
-        console.log('Error getting new download URL', err);
-      }
-    }
-
-    const data = {
-      title: this.state.title,
-      description: this.state.description,
-      image,
-      category,
-    };
+    let err;
 
     if (id) {
       // update existing record
-      await prizesRef.doc(id).set(data);
+      [err] = await Api.putFormData(`/prizes/${id}`, formData, true);
     } else {
       // new record
-      await prizesRef.add(data);
+      [err] = await Api.postFormData(`/prizes`, formData, true);
+    }
+
+    if (err) {
+      // eslint-disable-next-line no-console
+      console.log('Error creating/updating prize', err);
+      return;
     }
 
     this.setState({ complete: true });
@@ -187,33 +163,20 @@ class PrizePage extends Component {
     const { id } = this.props.match.params;
 
     if (id) {
-      const db = Firebase.firestore();
-      const prizesRef = db.collection('prizes');
-      const prizeDocRef = prizesRef.doc(id);
-      try {
-        const ticketsRef = db.collection('tickets');
-        const ticketsSnapshot = await ticketsRef.where('prize', '==', id).get();
-
-        if (!ticketsSnapshot.empty) {
-          const batch = db.batch();
-          ticketsSnapshot.forEach((doc) => {
-            batch.delete(doc.ref);
-          });
-          try {
-            await batch.commit();
-          } catch (err) {
-            // eslint-disable-next-line no-console
-            console.log('Error deleting tickets', err);
-          }
+      Api.delete(`/prizes/${id}`, true).then(([err]) => {
+        if (err) {
+          // eslint-disable-next-line no-console
+          console.log('Error deleting prize', err);
+          return;
         }
 
-        await prizeDocRef.delete();
-      } catch (err) {
-        // eslint-disable-next-line no-console
-        console.log('Error deleting prize', err);
-      }
-      this.setState({ complete: true });
+        this.setState({ complete: true });
+      });
     }
+  };
+
+  onApiErrorClose = () => {
+    this.setState({ errors: [] });
   };
 
   render() {
@@ -226,6 +189,9 @@ class PrizePage extends Component {
         ) : (
           <form id="prizeForm" className={s.contentContainer} onSubmit={this.onFormSubmit}>
             <h1>Prize</h1>
+            {this.state.errors.length > 0 ? (
+              <Alerts alerts={this.state.errors} onClose={this.onApiErrorClose} />
+            ) : null}
             <fieldset>
               <label htmlFor="title">Title</label>
               <TextInput
@@ -278,7 +244,7 @@ class PrizePage extends Component {
             <fieldset>
               <label htmlFor="image">Image</label>
               <br />
-              {this.state.image !== undefined && this.state.image !== '' && (
+              {this.state.image != null && this.state.image !== '' && (
                 <img alt="Prize" src={this.state.image} />
               )}
               <br />

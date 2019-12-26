@@ -1,15 +1,23 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { withRouter, Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
+import { useSelector, useDispatch } from 'react-redux';
 
 import { Button } from '@dmsi/wedgekit';
 
-import Firebase from '../../fire';
+import { userLogout } from '../../redux/modules/userLogout';
 
 import s from './header.module.scss';
 
-const header = (props) => {
-  const { currentUser } = Firebase.auth();
+const Header = ({ history }) => {
+  const username = useSelector((state) => state.userInfo.username);
+
+  const dispatch = useDispatch();
+
+  const logout = useCallback(() => {
+    dispatch(userLogout());
+    history.push('/login');
+  }, [dispatch, history]);
 
   return (
     <div className={s.headerContiner}>
@@ -17,31 +25,17 @@ const header = (props) => {
         <h2>WWCD</h2>
       </Link>
       <div>
-        <span>Hello {currentUser.displayName || currentUser.email}</span>
-        <Button
-          onClick={() => {
-            Firebase.auth()
-              .signOut()
-              .then(
-                () => props.history.push('/login'),
-                (err) => {
-                  // eslint-disable-next-line no-console
-                  console.log('Error signing out', err);
-                },
-              );
-          }}
-        >
-          Logout
-        </Button>
+        <span>Hello {username}</span>
+        <Button onClick={logout}>Logout</Button>
       </div>
     </div>
   );
 };
 
-header.propTypes = {
+Header.propTypes = {
   history: PropTypes.shape({
     push: PropTypes.func.isRequired,
   }).isRequired,
 };
 
-export default withRouter(header);
+export default withRouter(Header);

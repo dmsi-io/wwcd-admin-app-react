@@ -4,7 +4,7 @@ import { Player, ControlBar } from 'video-react';
 import { Loading, Modal } from '@dmsi/wedgekit';
 
 import Header from '../../components/header/header';
-import Firebase from '../../fire';
+import Api from '../../utils/api';
 
 import s from './draw.module.scss';
 

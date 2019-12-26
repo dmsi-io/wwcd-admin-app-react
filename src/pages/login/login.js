@@ -14,6 +14,7 @@ import s from './login.module.scss';
 class LoginPage extends Component {
   static propTypes = {
     location: PropTypes.object.isRequired,
+    setUserInfo: PropTypes.func.isRequired,
   };
 
   constructor(props) {
@@ -41,12 +42,12 @@ class LoginPage extends Component {
 
     const data = {
       attributes: {
-        username: this.state.username,
+        username: this.state.username.toLowerCase(),
         password: this.state.password,
       },
     };
 
-    const [err, tokenData] = await api.post('/authenticate', { data });
+    const [err, tokenData] = await api.post('/authenticateadmin', JSON.stringify({ data }), false);
 
     if (err) {
       this.setState({
@@ -56,6 +57,11 @@ class LoginPage extends Component {
     } else {
       storage.set('token', tokenData.data.attributes.token);
       storage.set('userID', tokenData.data.id);
+
+      this.props.setUserInfo({
+        id: tokenData.data.id,
+        username: this.state.username.toLowerCase(),
+      });
 
       this.setState({
         loading: false,
@@ -81,7 +87,7 @@ class LoginPage extends Component {
           <div className={s.imgContainer}>
             <img src={logoImg} alt="Logo" />
           </div>
-          {this.state.error.status ? (
+          {this.state.errors.length > 0 ? (
             <Alerts
               alerts={this.state.errors.map((error) => error.detail)}
               onClose={this.onApiErrorClose}

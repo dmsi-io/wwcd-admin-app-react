@@ -7,7 +7,7 @@ import Header from '../../components/header/header';
 
 import s from './home.module.scss';
 
-export default () => (
+const Home = () => (
   <div>
     <Header />
     <div className={s.contentContainer}>
@@ -44,3 +44,5 @@ export default () => (
     </div>
   </div>
 );
+
+export default Home;
