@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
-import { Player, ControlBar } from 'video-react';
 
-import { Loading, Modal } from '@dmsi/wedgekit';
+import { Loading } from '@dmsi/wedgekit';
 
 import Header from '../../components/header/header';
 import Api from '../../utils/api';
 
 import s from './draw.module.scss';
+import DrawingModal from './drawingModal';
 
 const sortPrizes = (a, b) => {
   if (a.title < b.title) {
@@ -22,142 +22,109 @@ class DrawPage extends Component {
     this.state = {
       prizes: [],
       tickets: [],
+      users: [],
       loading: true,
     };
   }
 
   componentDidMount = async () => {
-    const db = Firebase.firestore();
+    this.updateSince = new Date();
 
-    const prizeInitialLoadPromise = new Promise((resolve) => {
-      const prizesRef = db.collection('prizes');
+    Promise.all([Api.get('/prizes'), Api.get('/tickets', true), Api.get('/users', true)]).then(
+      ([[prizeErr, prizesRes], [ticketErr, ticketsRes], [userErr, usersRes]]) => {
+        if (prizeErr) {
+          console.log('Error while getting prizes', prizeErr);
+          return;
+        }
 
-      this.prizeUpdateUnsubscribe = prizesRef.onSnapshot({
-        next: (snapshot) => {
-          this.setState((prevState) => {
-            const prizes = snapshot.docs
-              .map((prize) => ({
-                ...prize.data(),
-                id: prize.id,
-                tickets: prevState.tickets.filter((ticket) => ticket.prize.id === prize.id),
-              }))
-              .sort(sortPrizes);
-            return {
-              prizes,
-            };
-          }, resolve);
-        },
-        error: (err) => {
-          // eslint-disable-next-line no-console
-          console.log('Error updating prizes', err);
-        },
-      });
-    });
+        if (ticketErr) {
+          console.log('Error while getting tickets', ticketErr);
+          return;
+        }
 
-    const ticketInitialLoadPromise = new Promise((resolve) => {
-      const ticketsRef = db.collection('tickets');
+        if (userErr) {
+          console.log('Error while getting users', userErr);
+          return;
+        }
 
-      this.ticketUpdateUnsubscribe = ticketsRef.onSnapshot({
-        next: (snapshot) => {
-          this.setState((prevState) => {
-            const tickets = snapshot.docs.map((ticket) => ({ ...ticket.data(), id: ticket.id }));
-            const prizes = prevState.prizes
-              .map((prize) => ({
-                ...prize,
-                tickets: tickets.filter((ticket) => ticket.prize.id === prize.id),
-              }))
-              .sort(sortPrizes);
+        console.log(prizesRes, ticketsRes, usersRes);
 
-            return {
-              tickets,
-              prizes,
-            };
-          }, resolve);
-        },
-        error: (err) => {
-          // eslint-disable-next-line no-console
-          console.log('Error updating prizes', err);
-        },
-      });
-    });
+        const tickets = ticketsRes.data.map(({ attributes }) => attributes);
+        const users = usersRes.data.map(({ attributes }) => attributes);
 
-    Promise.all([prizeInitialLoadPromise, ticketInitialLoadPromise]).then(() => {
-      this.setState({ loading: false });
-    });
+        const prizes = prizesRes.data
+          .map(({ attributes }) => ({
+            ...attributes,
+            tickets: tickets.filter(({ prizeId }) => prizeId === attributes.id),
+          }))
+          .sort(sortPrizes);
+
+        this.setState({
+          loading: false,
+          prizes,
+          tickets,
+          users,
+        });
+
+        this.updateTimeout = setTimeout(this.update, 30000);
+      },
+    );
   };
 
   componentWillUnmount() {
-    if (this.prizeUpdateUnsubscribe) {
-      this.prizeUpdateUnsubscribe();
-    }
-    if (this.ticketUpdateUnsubscribe) {
-      this.ticketUpdateUnsubscribe();
+    if (this.updateTimeout) {
+      clearTimeout(this.updateTimeout);
     }
   }
 
-  onPrizeClick = async (prize) => {
-    if (prize.tickets.length > 0) {
-      const winningTicket = prize.tickets[Math.floor(Math.random() * prize.tickets.length)];
+  update = async () => {
+    const since = new Date();
 
-      const result = await winningTicket.user.get();
+    let err;
+    let newTickets;
 
-      if (result.exists) {
-        const user = result.data();
-
-        this.setState(
-          {
-            prizeModal: true,
-            winnerFirstName: '',
-            winnerLastName: '',
-          },
-          () => {
-            setTimeout(() => {
-              this.setState({
-                winnerFirstName: user.firstName,
-                winnerLastName: user.lastName,
-              });
-            }, 2500);
-          },
-        );
-      }
-    } else {
-      this.setState(
-        {
-          prizeModal: true,
-          winnerFirstName: '',
-          winnerLastName: '',
-        },
-        () => {
-          setTimeout(() => {
-            this.setState({
-              winnerFirstName: 'No Tickets',
-              winnerLastName: 'Entered',
-            });
-          }, 2500);
-        },
-      );
+    try {
+      [err, newTickets] = await Api.get(`/tickets?since=${this.updateSince}`, true);
+    } catch (error) {
+      err = error;
     }
+
+    if (err) {
+      console.log('Error getting new tickets', err);
+    } else {
+      this.updateSince = since;
+
+      const tickets = newTickets.data
+        .map(({ attributes }) => attributes)
+        .filter(({ id }) => !this.state.tickets.some((ticket) => ticket.id === id));
+
+      this.setState(({ prizes, tickets: oldTickets }) => ({
+        prizes: prizes.map((prize) => ({
+          ...prize,
+          tickets: [...prize.tickets, ...tickets.filter(({ prizeId }) => prizeId === prize.id)],
+        })),
+        tickets: [...oldTickets, ...tickets],
+      }));
+    }
+    this.updateTimeout = setTimeout(this.update, 30000);
+  };
+
+  onPrizeClick = async (prize) => {
+    this.setState({
+      chosenPrize: prize,
+      prizeModal: true,
+    });
   };
 
   render() {
     return (
       <div>
         {this.state.prizeModal && (
-          <Modal fullscreen onExit={() => this.setState({ prizeModal: false })}>
-            <div className={s.modalContentContainer}>
-              <Player
-                autoPlay
-                src="https://firebasestorage.googleapis.com/v0/b/wwcd-f0480.appspot.com/o/videos%2Fdrawing.mp4?alt=media&token=5517d566-52fd-4c00-adbd-fe5c0ac603f4"
-              >
-                <ControlBar disableCompletely />
-              </Player>
-              <span className={s.winnerText}>
-                {this.state.winnerFirstName}
-                <br />
-                {this.state.winnerLastName}
-              </span>
-            </div>
-          </Modal>
+          <DrawingModal
+            users={this.state.users}
+            prize={this.state.chosenPrize}
+            onExit={() => this.setState({ prizeModal: false })}
+          />
         )}
         <Header />
         {this.state.loading && <Loading />}
@@ -176,7 +143,7 @@ class DrawPage extends Component {
                   onKeyPress={() => {}}
                   className={s.prizeContainer}
                 >
-                  {prize.image !== '' && (
+                  {prize.image !== '' && prize.image != null && (
                     <div className={s.prizeImageContainer}>
                       <img className={s.prizeImage} src={prize.image} alt="Prize" />
                     </div>

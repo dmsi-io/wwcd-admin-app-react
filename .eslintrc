@@ -14,7 +14,8 @@
         "components": [],
         "aspects": ["noHref", "invalidHref", "preferButton"]
       }
-    ]
+    ],
+    "no-console": "off"
   },
   "globals": {
     "window": true,

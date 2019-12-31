@@ -8,7 +8,7 @@ import '@dmsi/wedgekit/dist/wedgekit.css';
 
 import store from './redux/store';
 
-// import Draw from './pages/draw/draw';
+import Draw from './pages/draw/draw';
 import Home from './pages/home/home';
 import Login from './pages/login';
 import PageNotFound from './pages/404/404';
@@ -29,19 +29,12 @@ const PrivateRoute = ({ component: Component, ...rest }) => {
         storage.get('token') ? (
           <Component {...props} />
         ) : (
-          <>
-            {(() => {
-              console.log('redirecting to login');
-              return true;
-            })() && (
-              <Redirect
-                to={{
-                  pathname: '/login',
-                  state: { from: props.location },
-                }}
-              />
-            )}
-          </>
+          <Redirect
+            to={{
+              pathname: '/login',
+              state: { from: props.location },
+            }}
+          />
         )
       }
     />
@@ -69,12 +62,7 @@ const App = () => (
           <PrivateRoute path="/users" exact component={Users} />
           <PrivateRoute path="/user/:id?" component={User} />
           <PrivateRoute path="/users/export" exact component={ExportUsers} />
-          {/* <PrivateRoute path="/draw" exact component={Draw} />
-          <PrivateRoute path="/users" exact component={Users} />
-          <PrivateRoute path="/user/:id?" component={User} />
-          <PrivateRoute path="/users/export" exact component={ExportUsers} />
-          <PrivateRoute path="/prizes" exact component={PrizesList} />
-          <PrivateRoute path="/prize/:id?" component={Prize} /> */}
+          <PrivateRoute path="/draw" exact component={Draw} />
           <Route component={PageNotFound} />
         </Switch>
       </div>
