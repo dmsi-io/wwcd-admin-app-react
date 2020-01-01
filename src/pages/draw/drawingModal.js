@@ -6,30 +6,15 @@ import { Modal } from '@dmsi/wedgekit';
 
 import s from './drawingModal.module.scss';
 
-const TICKET_WIDTH = 50;
+const TICKET_WIDTH = 100;
 
 class DrawingModal extends Component {
   constructor(props) {
     super(props);
 
-    this.state = {
-      winnerFirstName: '',
-      winnerLastName: '',
-      tickets: props.prize.tickets.map((ticket) => ({
-        ...ticket,
-        displayData: {
-          delay: Math.random() * 500,
-          startX: Math.random() * window.innerWidth,
-          endXRandom: Math.random() * 300 - 150,
-          flyingYRandom: Math.random() * 100 - 50,
-          endXRandom2: Math.random() * 400 - 200,
-          flyingYRandom2: Math.random() * 100 - 50,
-        },
-      })),
-    };
-  }
+    let winnerFirstName = '';
+    let winnerLastName = '';
 
-  componentDidMount() {
     if (this.props.prize.tickets.length > 0) {
       const winningTicket = this.props.prize.tickets[
         Math.floor(Math.random() * this.props.prize.tickets.length)
@@ -38,22 +23,30 @@ class DrawingModal extends Component {
       const result = this.props.users.find(({ id }) => winningTicket.userId === id);
 
       if (result) {
-        const user = result;
-        // setTimeout(() => {
-        //   this.setState({
-        //     winnerFirstName: user.firstName,
-        //     winnerLastName: user.lastName,
-        //   });
-        // }, 2500);
+        winnerFirstName = result.firstName;
+        winnerLastName = result.lastName;
       }
     } else {
-      // setTimeout(() => {
-      //   this.setState({
-      //     winnerFirstName: 'No Tickets',
-      //     winnerLastName: 'Entered',
-      //   });
-      // }, 2500);
+      winnerFirstName = 'No Tickets';
+      winnerLastName = 'Entered';
     }
+
+    this.state = {
+      winnerFirstName,
+      winnerLastName,
+      tickets: props.prize.tickets.map((ticket) => ({
+        ...ticket,
+        displayData: {
+          delay: Math.random() * 500,
+          startX: Math.random() * window.innerWidth,
+          endXRandom: Math.random() * 400 - 200,
+          flyingYRandom: Math.random() * 100,
+          endXRandom2: Math.random() * 400 - 200,
+          flyingYRandom2: Math.random() * 100,
+          randomRotate: Math.floor(Math.random() * 240 + 120),
+        },
+      })),
+    };
   }
 
   shouldComponentUpdate(nextProps, nextState) {
@@ -64,7 +57,7 @@ class DrawingModal extends Component {
     const { onExit } = this.props;
     return (
       <Modal fullscreen onExit={onExit}>
-        <div key={'keyyyyy'}>
+        <div>
           {this.state.tickets.map((ticket) => {
             const user = this.props.users.find(({ id }) => ticket.userId === id);
             return (
@@ -76,67 +69,78 @@ class DrawingModal extends Component {
                     easing: 'easeInOutQuad',
                     value:
                       window.innerWidth / 2 -
+                      TICKET_WIDTH / 2 -
                       ticket.displayData.startX +
                       ticket.displayData.endXRandom,
                     delay: ticket.displayData.delay,
                   },
                   {
                     delay: 0,
-                    duration: 100,
+                    duration: 0,
                     easing: 'linear',
                     value:
                       window.innerWidth / 2 -
                       TICKET_WIDTH / 2 -
                       ticket.displayData.startX +
-                      Math.abs(ticket.displayData.endXRandom),
+                      Math.abs(ticket.displayData.endXRandom + 100) -
+                      100,
                   },
                   {
-                    delay: 400,
+                    delay: 700,
                     duration: 1000,
                     easing: 'linear',
                     value:
                       window.innerWidth / 2 -
                       TICKET_WIDTH / 2 -
                       ticket.displayData.startX +
-                      -Math.abs(ticket.displayData.endXRandom),
+                      -Math.abs(ticket.displayData.endXRandom - 100) +
+                      100,
                   },
                   {
                     delay: 0,
-                    duration: 100,
+                    duration: 0,
                     easing: 'linear',
                     value:
                       window.innerWidth / 2 -
                       TICKET_WIDTH / 2 -
                       ticket.displayData.startX +
-                      -Math.abs(ticket.displayData.endXRandom2),
+                      -Math.abs(ticket.displayData.endXRandom2 - 100) +
+                      100,
                   },
                   {
-                    delay: 400,
+                    delay: 500,
                     duration: 1000,
                     easing: 'linear',
                     value:
                       window.innerWidth / 2 -
                       TICKET_WIDTH / 2 -
                       ticket.displayData.startX +
-                      Math.abs(ticket.displayData.endXRandom2),
+                      Math.abs(ticket.displayData.endXRandom2 + 100) -
+                      100,
                   },
                 ]}
                 translateY={[
                   {
-                    duration: 1000,
+                    duration: 800,
                     easing: 'easeInOutQuad',
-                    value: '400px',
+                    value: '300px',
                     delay: ticket.displayData.delay,
                   },
                   {
-                    delay: 500,
+                    duration: 200,
+                    easing: 'linear',
+                    value: '400px',
+                    delay: 0,
+                  },
+                  {
+                    delay: 700,
                     duration: 400,
                     value: 200 - ticket.displayData.flyingYRandom,
                     easing: 'easeOutCubic',
                   },
                   {
                     delay: 100,
-                    duration: 400,
+                    duration: 500,
                     value: '400px',
                     easing: 'easeInCubic',
                   },
@@ -148,9 +152,23 @@ class DrawingModal extends Component {
                   },
                   {
                     delay: 100,
-                    duration: 400,
+                    duration: 500,
                     value: '400px',
                     easing: 'easeInCubic',
+                  },
+                ]}
+                rotate={[
+                  {
+                    duration: 1500,
+                    easing: 'easeInOutQuad',
+                    value: `-${ticket.displayData.randomRotate}deg`,
+                    delay: 1200 + ticket.displayData.delay,
+                  },
+                  {
+                    duration: 1500,
+                    easing: 'easeInOutQuad',
+                    value: '0deg',
+                    delay: ticket.displayData.delay,
                   },
                 ]}
                 easing="easeInOutQuad"
@@ -165,20 +183,44 @@ class DrawingModal extends Component {
                     top: -70,
                   }}
                 >
-                  {user.firstName}
-                  <br />
-                  {user.lastName}
+                  <div>
+                    {user.firstName}
+                    <br />
+                    {user.lastName}
+                  </div>
                 </div>
               </Anime>
             );
           })}
           <Anime
-            key={'5'}
+            key="4"
+            delay={5000}
+            translateY={-280}
+            easing="easeOutCirc"
+            direction="normal"
+            scale={[1, 1, 6]}
+          >
+            <div
+              className={s.animatedContainer}
+              style={{
+                left: window.innerWidth / 2 - TICKET_WIDTH / 2,
+                top: '400px',
+              }}
+            >
+              <div>
+                {this.state.winnerFirstName}
+                <br />
+                {this.state.winnerLastName}
+              </div>
+            </div>
+          </Anime>
+          <Anime
+            key="5"
             rotate={[
               {
                 value: '12deg',
                 easing: 'linear',
-                delay: 1000,
+                delay: 1200,
                 duration: 500,
               },
               {
@@ -201,7 +243,12 @@ class DrawingModal extends Component {
               },
             ]}
           >
-            <div className={s.bowl} />
+            <div className={s.bowlBackground}>
+              <div className={s.bowl}>
+                <div />
+                <span>DMSi Christmas Party</span>
+              </div>
+            </div>
           </Anime>
         </div>
       </Modal>
