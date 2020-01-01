@@ -58,125 +58,125 @@ class DrawingModal extends Component {
     return (
       <Modal fullscreen onExit={onExit}>
         <div>
-          {this.state.tickets.map((ticket) => {
-            const user = this.props.users.find(({ id }) => ticket.userId === id);
-            return (
-              <Anime
-                key={ticket.id}
-                translateX={[
-                  {
-                    duration: 1000,
-                    easing: 'easeInOutQuad',
-                    value:
-                      window.innerWidth / 2 -
-                      TICKET_WIDTH / 2 -
-                      ticket.displayData.startX +
-                      ticket.displayData.endXRandom,
-                    delay: ticket.displayData.delay,
-                  },
-                  {
-                    delay: 0,
-                    duration: 0,
-                    easing: 'linear',
-                    value:
-                      window.innerWidth / 2 -
-                      TICKET_WIDTH / 2 -
-                      ticket.displayData.startX +
-                      Math.abs(ticket.displayData.endXRandom + 100) -
-                      100,
-                  },
-                  {
-                    delay: 700,
-                    duration: 1000,
-                    easing: 'linear',
-                    value:
-                      window.innerWidth / 2 -
-                      TICKET_WIDTH / 2 -
-                      ticket.displayData.startX +
-                      -Math.abs(ticket.displayData.endXRandom - 100) +
-                      100,
-                  },
-                  {
-                    delay: 0,
-                    duration: 0,
-                    easing: 'linear',
-                    value:
-                      window.innerWidth / 2 -
-                      TICKET_WIDTH / 2 -
-                      ticket.displayData.startX +
-                      -Math.abs(ticket.displayData.endXRandom2 - 100) +
-                      100,
-                  },
-                  {
-                    delay: 500,
-                    duration: 1000,
-                    easing: 'linear',
-                    value:
-                      window.innerWidth / 2 -
-                      TICKET_WIDTH / 2 -
-                      ticket.displayData.startX +
-                      Math.abs(ticket.displayData.endXRandom2 + 100) -
-                      100,
-                  },
-                ]}
-                translateY={[
-                  {
-                    duration: 800,
-                    easing: 'easeInOutQuad',
-                    value: '300px',
-                    delay: ticket.displayData.delay,
-                  },
-                  {
-                    duration: 200,
-                    easing: 'linear',
-                    value: '400px',
-                    delay: 0,
-                  },
-                  {
-                    delay: 700,
-                    duration: 400,
-                    value: 200 - ticket.displayData.flyingYRandom,
-                    easing: 'easeOutCubic',
-                  },
-                  {
-                    delay: 100,
-                    duration: 500,
-                    value: '400px',
-                    easing: 'easeInCubic',
-                  },
-                  {
-                    delay: 500,
-                    duration: 400,
-                    value: 200 - ticket.displayData.flyingYRandom2,
-                    easing: 'easeOutCubic',
-                  },
-                  {
-                    delay: 100,
-                    duration: 500,
-                    value: '400px',
-                    easing: 'easeInCubic',
-                  },
-                ]}
-                rotate={[
-                  {
-                    duration: 1500,
-                    easing: 'easeInOutQuad',
-                    value: `-${ticket.displayData.randomRotate}deg`,
-                    delay: 1200 + ticket.displayData.delay,
-                  },
-                  {
-                    duration: 1500,
-                    easing: 'easeInOutQuad',
-                    value: '0deg',
-                    delay: ticket.displayData.delay,
-                  },
-                ]}
-                easing="easeInOutQuad"
-                duration={1000}
-                direction="normal"
-                scale={[1, 1]}
-              >
+          <Anime
+            key="1"
+            translateX={[
+              {
+                duration: 1000,
+                easing: 'easeInOutQuad',
+                value: (e, i) =>
+                  window.innerWidth / 2 -
+                  TICKET_WIDTH / 2 -
+                  this.state.tickets[i].displayData.startX +
+                  this.state.tickets[i].displayData.endXRandom,
+                delay: (e, i) => this.state.tickets[i].displayData.delay,
+              },
+              {
+                delay: 0,
+                duration: 0,
+                easing: 'linear',
+                value: (e, i) =>
+                  window.innerWidth / 2 -
+                  TICKET_WIDTH / 2 -
+                  this.state.tickets[i].displayData.startX +
+                  Math.abs(this.state.tickets[i].displayData.endXRandom + 100) -
+                  100,
+              },
+              {
+                delay: 700,
+                duration: 1000,
+                easing: 'linear',
+                value: (e, i) =>
+                  window.innerWidth / 2 -
+                  TICKET_WIDTH / 2 -
+                  this.state.tickets[i].displayData.startX +
+                  -Math.abs(this.state.tickets[i].displayData.endXRandom - 100) +
+                  100,
+              },
+              {
+                delay: 0,
+                duration: 0,
+                easing: 'linear',
+                value: (e, i) =>
+                  window.innerWidth / 2 -
+                  TICKET_WIDTH / 2 -
+                  this.state.tickets[i].displayData.startX +
+                  -Math.abs(this.state.tickets[i].displayData.endXRandom2 - 100) +
+                  100,
+              },
+              {
+                delay: 500,
+                duration: 1000,
+                easing: 'linear',
+                value: (e, i) =>
+                  window.innerWidth / 2 -
+                  TICKET_WIDTH / 2 -
+                  this.state.tickets[i].displayData.startX +
+                  Math.abs(this.state.tickets[i].displayData.endXRandom2 + 100) -
+                  100,
+              },
+            ]}
+            translateY={[
+              {
+                duration: 800,
+                easing: 'easeInOutQuad',
+                value: '300px',
+                delay: (e, i) => this.state.tickets[i].displayData.delay,
+              },
+              {
+                duration: 200,
+                easing: 'linear',
+                value: '400px',
+                delay: 0,
+              },
+              {
+                delay: 700,
+                duration: 400,
+                value: (e, i) => 200 - this.state.tickets[i].displayData.flyingYRandom,
+                easing: 'easeOutCubic',
+              },
+              {
+                delay: 100,
+                duration: 500,
+                value: '400px',
+                easing: 'easeInCubic',
+              },
+              {
+                delay: 500,
+                duration: 400,
+                value: (e, i) => 200 - this.state.tickets[i].displayData.flyingYRandom2,
+                easing: 'easeOutCubic',
+              },
+              {
+                delay: 100,
+                duration: 500,
+                value: '400px',
+                easing: 'easeInCubic',
+              },
+            ]}
+            rotate={[
+              {
+                duration: 1500,
+                easing: 'easeInOutQuad',
+                value: (e, i) => `-${this.state.tickets[i].displayData.randomRotate}deg`,
+                delay: (e, i) => 1200 + this.state.tickets[i].displayData.delay,
+              },
+              {
+                duration: 1500,
+                easing: 'easeInOutQuad',
+                value: '0deg',
+                delay: (e, i) => this.state.tickets[i].displayData.delay,
+              },
+            ]}
+            easing="easeInOutQuad"
+            duration={1000}
+            direction="normal"
+          >
+            {this.state.tickets.map((ticket) => {
+              const user = this.props.users.find(({ id }) => ticket.userId === id);
+              return (
                 <div
+                  key={ticket.id}
                   className={s.animatedContainer}
                   style={{
                     left: ticket.displayData.startX,
@@ -189,9 +189,9 @@ class DrawingModal extends Component {
                     {user.lastName}
                   </div>
                 </div>
-              </Anime>
-            );
-          })}
+              );
+            })}
+          </Anime>
           <Anime
             key="4"
             delay={5000}
