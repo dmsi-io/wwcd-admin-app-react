@@ -8,7 +8,7 @@ const getToken = () => {
   return `Bearer ${token}`;
 };
 
-const BASE_URL = 'http://localhost:8080'; // 'https://api.dmsiparty.com';
+const BASE_URL = 'https://api.dmsiparty.com';
 
 const makeRequest = (method, route, authNeeded, headers = {}, body = undefined) => {
   const newHeaders = {
