@@ -23,6 +23,7 @@ class DrawPage extends Component {
       prizes: [],
       tickets: [],
       users: [],
+      winningTicket: null,
       loading: true,
     };
   }
@@ -46,8 +47,6 @@ class DrawPage extends Component {
           console.log('Error while getting users', userErr);
           return;
         }
-
-        console.log(prizesRes, ticketsRes, usersRes);
 
         const tickets = ticketsRes.data.map(({ attributes }) => attributes);
         const users = usersRes.data.map(({ attributes }) => attributes);
@@ -110,8 +109,64 @@ class DrawPage extends Component {
   };
 
   onPrizeClick = async (prize) => {
+    let filteredTickets = [];
+    if (prize.tickets.length > 0) {
+      filteredTickets = prize.tickets.filter((ticket) => !ticket.used);
+
+      if (filteredTickets.length > 0) {
+        const winningTicket = filteredTickets[Math.floor(Math.random() * filteredTickets.length)];
+
+        this.setState(({ prizes, tickets }) => ({
+          chosenPrize: {
+            ...prize,
+            tickets: filteredTickets,
+          },
+          winningTicket,
+          prizes: prizes.map((p) => ({
+            ...p,
+            tickets:
+              p.id === winningTicket.prizeId
+                ? p.tickets.map((ticket) =>
+                    ticket.userId === winningTicket.userId
+                      ? {
+                          ...ticket,
+                          used: true,
+                        }
+                      : ticket,
+                  )
+                : p.tickets,
+          })),
+          tickets: tickets.map((ticket) =>
+            ticket.prizeId === winningTicket.prizeId && ticket.userId === winningTicket.userId
+              ? { ...ticket, used: true }
+              : ticket,
+          ),
+          prizeModal: true,
+        }));
+        await Api.post(
+          '/tickets/markused',
+          JSON.stringify({
+            data: {
+              attributes: {
+                prizeId: winningTicket.prizeId,
+                userId: winningTicket.userId,
+              },
+            },
+          }),
+          true,
+        );
+        return; // make sure we return here
+      }
+    }
     this.setState({
-      chosenPrize: prize,
+      chosenPrize: {
+        ...prize,
+        tickets: filteredTickets,
+      },
+      winningTicket: {
+        firstName: 'No Tickets',
+        lastName: 'Entered',
+      },
       prizeModal: true,
     });
   };
@@ -121,6 +176,7 @@ class DrawPage extends Component {
       <div>
         {this.state.prizeModal && (
           <DrawingModal
+            winningTicket={this.state.winningTicket}
             users={this.state.users}
             prize={this.state.chosenPrize}
             onExit={() => this.setState({ prizeModal: false })}

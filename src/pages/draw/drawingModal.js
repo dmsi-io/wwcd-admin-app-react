@@ -15,20 +15,16 @@ class DrawingModal extends Component {
     let winnerFirstName = '';
     let winnerLastName = '';
 
-    if (this.props.prize.tickets.length > 0) {
-      const winningTicket = this.props.prize.tickets[
-        Math.floor(Math.random() * this.props.prize.tickets.length)
-      ];
+    if (props.winningTicket.userId) {
+      const found = props.users.find((user) => user.id === props.winningTicket.userId);
 
-      const result = this.props.users.find(({ id }) => winningTicket.userId === id);
-
-      if (result) {
-        winnerFirstName = result.firstName;
-        winnerLastName = result.lastName;
+      if (found) {
+        winnerFirstName = found.firstName;
+        winnerLastName = found.lastName;
       }
     } else {
-      winnerFirstName = 'No Tickets';
-      winnerLastName = 'Entered';
+      winnerFirstName = props.winningTicket.firstName;
+      winnerLastName = props.winningTicket.lastName;
     }
 
     this.state = {
@@ -259,6 +255,7 @@ class DrawingModal extends Component {
 DrawingModal.propTypes = {
   prize: PropTypes.object.isRequired,
   users: PropTypes.arrayOf(PropTypes.object).isRequired,
+  winningTicket: PropTypes.object.isRequired,
   onExit: PropTypes.func.isRequired,
 };
 

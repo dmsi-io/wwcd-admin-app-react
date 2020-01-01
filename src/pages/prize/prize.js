@@ -175,6 +175,25 @@ class PrizePage extends Component {
     }
   };
 
+  onClearUsed = async () => {
+    const { id } = this.props.match.params;
+    if (id) {
+      Api.post(
+        '/tickets/clearused',
+        JSON.stringify({ data: { attributes: { prizeId: id } } }),
+        true,
+      ).then(([err]) => {
+        if (err) {
+          // eslint-disable-next-line no-console
+          console.log('Error clearing used on tickets of prize', err);
+          return;
+        }
+
+        this.setState({ errors: ['Tickets cleared of being used.'] });
+      });
+    }
+  };
+
   onApiErrorClose = () => {
     this.setState({ errors: [] });
   };
@@ -263,6 +282,15 @@ class PrizePage extends Component {
               {this.props.match.params.id && (
                 <Button onClick={this.onDeletePrize} className={s.deleteButton}>
                   Delete Prize
+                </Button>
+              )}
+              {this.props.match.params.id && (
+                <Button
+                  onClick={this.onClearUsed}
+                  className={s.saveButton}
+                  style={{ marginLeft: 30 }}
+                >
+                  Clear Used For Prize Tickets
                 </Button>
               )}
             </div>
