@@ -4,7 +4,7 @@ import { Redirect } from 'react-router-dom';
 
 import { Loading, TextInput, Button } from '@dmsi/wedgekit';
 
-import Firebase from '../../fire';
+import Api from '../../utils/api';
 import Header from '../../components/header/header';
 
 import s from './user.module.scss';
@@ -41,27 +41,28 @@ class UserPage extends Component {
     const { id } = this.props.match.params;
 
     if (id) {
-      const db = Firebase.firestore();
-      const usersRef = db.collection('users');
-      usersRef.doc(id).get().then((snapshot) => {
-        if (snapshot.exists) {
-          const data = snapshot.data();
+      Api.get(`/users/${id}`, true).then(([err, data]) => {
+        if (err) {
+          // eslint-disable-next-line no-console
+          console.log('Error getting user', err);
+          this.setState({ notFound: true, loading: false });
+          return;
+        }
+
+        if (data && data.data && data.data.attributes) {
+          const a = data.data.attributes;
           this.setState({
             loading: false,
-            firstName: data.firstName,
-            lastName: data.lastName,
-            username: data.username,
-            password: data.password,
-            tickets: `${data.tickets}`,
+            firstName: a.firstName,
+            lastName: a.lastName,
+            username: a.username,
+            password: a.password,
+            tickets: `${a.tickets}`,
             ticketsInvalid: false,
           });
         } else {
           this.setState({ notFound: true, loading: false });
         }
-      }, (err) => {
-        // eslint-disable-next-line no-console
-        console.log('Error getting user', err);
-        this.setState({ notFound: true, loading: false });
       });
     }
   }
@@ -70,7 +71,7 @@ class UserPage extends Component {
     this.setState({
       [name]: value,
     });
-  }
+  };
 
   onFormSubmit = async (e) => {
     e.preventDefault();
@@ -83,9 +84,6 @@ class UserPage extends Component {
 
     const { id } = this.props.match.params;
 
-    const db = Firebase.firestore();
-    const usersRef = db.collection('users');
-
     if (Number.isNaN(Number(this.state.tickets))) {
       this.setState({
         loading: false,
@@ -95,85 +93,88 @@ class UserPage extends Component {
     }
 
     if (!id) {
-      const usernameQuery = await usersRef.where('username', '==', this.state.username.toLowerCase()).get();
-      if (!usernameQuery.empty) {
-        this.setState({
-          usernameInvalid: true,
-          loading: false,
-        });
+      const [err, res] = await Api.get('/users', true);
+      if (err) {
+        // eslint-disable-next-line no-console
+        console.log('Error getting users', err);
+        this.setState({ loading: false });
         return;
+      }
+      if (res && res.data) {
+        const found = res.data.find(
+          ({ attributes }) => attributes.username === this.state.username.toLowerCase(),
+        );
+        if (found) {
+          this.setState({
+            usernameInvalid: true,
+            loading: false,
+          });
+          return;
+        }
       }
     }
 
     const data = {
-      firstName: this.state.firstName,
-      lastName: this.state.lastName,
-      username: this.state.username.toLowerCase(),
-      password: this.state.password,
-      tickets: Number(this.state.tickets),
+      attributes: {
+        firstName: this.state.firstName,
+        lastName: this.state.lastName,
+        username: this.state.username.toLowerCase(),
+        password: this.state.password,
+        tickets: Number(this.state.tickets),
+      },
     };
 
-    if (id) { // update existing record
-      await usersRef.doc(id).set(data);
-    } else { // new record
-      await usersRef.add(data);
+    let err;
+
+    if (id) {
+      // update existing record
+      [err] = await Api.put(`/users/${id}`, JSON.stringify({ data }), true);
+    } else {
+      // new record
+      [err] = await Api.post('/users', JSON.stringify({ data }), true);
+    }
+
+    if (err) {
+      // eslint-disable-next-line no-console
+      console.log('Error creating/updating user', err);
+      this.setState({ loading: false });
+      return;
     }
 
     this.setState({ complete: true });
-  }
+  };
 
   onDeleteUser = async () => {
     const { id } = this.props.match.params;
 
     if (id) {
-      const db = Firebase.firestore();
-      const usersRef = db.collection('users');
-      const userDocRef = usersRef.doc(id);
+      const [err] = await Api.delete(`/users/${id}`, true);
 
-      try {
-        const userSnapshot = await userDocRef.get();
-        if (userSnapshot.exists) {
-          const user = userSnapshot.data();
-          const ticketsRef = db.collection('tickets');
-          const ticketsSnapshot = await ticketsRef.where('user', '==', user.username).get();
-
-          if (!ticketsSnapshot.empty) {
-            const batch = db.batch();
-            ticketsSnapshot.forEach((doc) => {
-              batch.delete(doc.ref);
-            });
-            try {
-              await batch.commit();
-            } catch (err) {
-              // eslint-disable-next-line no-console
-              console.log('Error deleting tickets', err);
-            }
-          }
-
-          await userDocRef.delete();
-        }
-      } catch (err) {
+      if (err) {
         // eslint-disable-next-line no-console
         console.log('Error deleting user', err);
+        return;
       }
       this.setState({ complete: true });
     }
-  }
+  };
 
   onGenerateUsername = () => {
     if (this.state.firstName.length > 0 && this.state.lastName.length > 0) {
-      this.setState({ username: `${this.state.firstName.slice(0, 1)}${this.state.lastName}`.toLowerCase() });
+      this.setState({
+        username: `${this.state.firstName.slice(0, 1)}${this.state.lastName}`.toLowerCase(),
+      });
     }
-  }
+  };
 
   render() {
     return (
       <div className={s.userContainer}>
         <Header />
         {this.state.loading && <Loading />}
-        {this.state.notFound || this.state.complete ?
+        {this.state.notFound || this.state.complete ? (
           <Redirect to="/users" />
-          :
+        ) : (
           <form id="userForm" className={s.contentContainer} onSubmit={this.onFormSubmit}>
             <h1>User</h1>
             <fieldset>
@@ -215,10 +216,7 @@ class UserPage extends Component {
                 onChange={this.onInputChange}
                 error={this.state.usernameInvalid ? 'Username already taken' : ''}
               />
-              <Button
-                onClick={this.onGenerateUsername}
-                style={{ marginTop: '15px' }}
-              >
+              <Button onClick={this.onGenerateUsername} style={{ marginTop: '15px' }}>
                 Generate Username
               </Button>
             </fieldset>
@@ -256,15 +254,17 @@ class UserPage extends Component {
               />
             </fieldset>
             <div className={s.buttonHolder}>
-              <button type="submit" className={s.saveButton}>Save</button>
-              {this.props.match.params.id &&
+              <button type="submit" className={s.saveButton}>
+                Save
+              </button>
+              {this.props.match.params.id && (
                 <Button onClick={this.onDeleteUser} className={s.deleteButton}>
                   Delete User
                 </Button>
-              }
+              )}
             </div>
           </form>
-        }
+        )}
       </div>
     );
   }

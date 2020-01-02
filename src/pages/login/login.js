@@ -2,23 +2,20 @@ import React, { Component } from 'react';
 import { Redirect } from 'react-router-dom';
 import PropTypes from 'prop-types';
 
-import {
-  Alerts,
-  TextInput,
-  Loading,
-} from '@dmsi/wedgekit';
+import { Alerts, TextInput, Loading } from '@dmsi/wedgekit';
 
-import Firebase from '../../fire';
 import logoImg from '../../resources/logo.png';
 
-import s from './login.module.scss';
+import api from '../../utils/api';
+import storage from '../../utils/storage';
 
-const INVALID_CREDENTIALS = 'Invalid username and/or password.';
+import s from './login.module.scss';
 
 class LoginPage extends Component {
   static propTypes = {
     location: PropTypes.object.isRequired,
-  }
+    setUserInfo: PropTypes.func.isRequired,
+  };
 
   constructor(props) {
     super(props);
@@ -26,88 +23,76 @@ class LoginPage extends Component {
     this.state = {
       username: '',
       password: '',
-      error: {
-        status: false,
-      },
+      errors: [],
       loading: false,
       signedIn: false,
     };
-  }
-
-  componentDidMount() {
-    this.unsubscribeAuthChange = Firebase.auth().onAuthStateChanged((user) => {
-      if (user) {
-        this.setState({ signedIn: true });
-      } else {
-        this.setState({ signedIn: false });
-      }
-    });
-  }
-
-  componentWillUnmount() {
-    if (this.unsubscribeAuthChange) {
-      this.unsubscribeAuthChange();
-    }
   }
 
   onInputChange = (value, name) => {
     this.setState({
       [name]: value,
     });
-  }
+  };
 
-  onFormSubmit = (e) => {
+  onFormSubmit = async (e) => {
     e.preventDefault();
 
-    if (!this.state.username || !this.state.password) {
+    this.setState({ loading: true });
+
+    const data = {
+      attributes: {
+        username: this.state.username.toLowerCase(),
+        password: this.state.password,
+      },
+    };
+
+    const [err, tokenData] = await api.post('/authenticateadmin', JSON.stringify({ data }), false);
+
+    if (err) {
       this.setState({
-        error: {
-          status: true,
-          message: INVALID_CREDENTIALS,
-        },
+        errors: err.errors,
+        loading: false,
       });
     } else {
-      this.setState({ loading: true });
+      storage.set('token', tokenData.data.attributes.token);
+      storage.set('userID', tokenData.data.id);
 
-      Firebase.auth().signInWithEmailAndPassword(this.state.username, this.state.password).then(() => {
-        this.setState({ loading: false });
-      }).catch(() => {
-        this.setState({
-          error: {
-            status: true,
-            message: INVALID_CREDENTIALS,
-          },
-          loading: false,
-        });
+      this.props.setUserInfo({
+        id: tokenData.data.id,
+        username: this.state.username.toLowerCase(),
+      });
+
+      this.setState({
+        loading: false,
+        signedIn: true,
       });
     }
-  }
+  };
+
+  onApiErrorClose = () => {
+    this.setState({ errors: [] });
+  };
 
   render() {
     const { from } = this.props.location.state || { from: { pathname: '/' } };
 
     if (this.state.signedIn) {
-      return (
-        <Redirect to={from} />
-      );
+      return <Redirect to={from} />;
     }
 
     return (
       <div className={s.layout}>
         <form id="loginForm" className={s.authContainer} onSubmit={this.onFormSubmit}>
           <div className={s.imgContainer}>
-            <img
-              src={logoImg}
-              alt="Logo"
-            />
+            <img src={logoImg} alt="Logo" />
           </div>
-          {
-            this.state.error.status ?
-              <Alerts
-                alerts={[this.state.error]}
-                onClose={() => this.setState({ error: { status: false } })}
-              /> : null
-          }
+          {this.state.errors.length > 0 ? (
+            <Alerts
+              alerts={this.state.errors.map((error) => error.detail)}
+              onClose={this.onApiErrorClose}
+            />
+          ) : null}
           {this.state.loading && <Loading inline />}
           <fieldset className="form-group">
             <TextInput
@@ -142,7 +127,9 @@ class LoginPage extends Component {
               onChange={this.onInputChange}
             />
           </fieldset>
-          <button type="submit" className="btn btn--primary pull-xs-right">Log In</button>
+          <button type="submit" className="btn btn--primary pull-xs-right">
+            Log In
+          </button>
         </form>
       </div>
     );

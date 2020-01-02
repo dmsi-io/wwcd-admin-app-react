@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { Loading, Button } from '@dmsi/wedgekit';
 
 import Header from '../../components/header/header';
-import Firebase from '../../fire';
+import Api from '../../utils/api';
 
 import s from './users.module.scss';
 
@@ -19,27 +19,26 @@ class UsersPage extends Component {
   }
 
   componentDidMount() {
-    const db = Firebase.firestore();
+    const sort = (users) =>
+      users.sort((a, b) => {
+        const aName = `${a.lastName}, ${a.firstName}`;
+        const bName = `${b.lastName}, ${b.firstName}`;
+        return aName < bName ? -1 : aName > bName ? 1 : 0; // eslint-disable-line
+      });
 
-    const sort = (docs) => docs.sort((a, b) => {
-      const aName = `${a.lastName}, ${a.firstName}`;
-      const bName = `${b.lastName}, ${b.firstName}`;
-      return aName < bName ? -1 : aName > bName ? 1 : 0; // eslint-disable-line
-    });
-
-    const usersRef = db.collection('users');
-
-    this.usersUpdateUnsubscribe = usersRef.onSnapshot({
-      next: (snapshot) => {
-        this.setState({
-          users: sort(snapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id }))),
-          loading: false,
-        });
-      },
-      error: (err) => {
+    Api.get('/users', true).then(([err, data]) => {
+      if (err) {
         // eslint-disable-next-line no-console
-        console.log('Error updating documents', err);
-      },
+        console.log('Error getting users', err);
+        return;
+      }
+
+      if (data && data.data) {
+        this.setState({
+          loading: false,
+          users: sort(data.data.map(({ attributes }) => attributes)),
+        });
+      }
     });
   }
 
@@ -61,16 +60,12 @@ class UsersPage extends Component {
               <div>
                 <span style={{ marginRight: '10px' }}>
                   <Link to="/users/export">
-                    <Button>
-                      Export Users
-                    </Button>
+                    <Button>Export Users</Button>
                   </Link>
                 </span>
                 <span>
                   <Link to="/user">
-                    <Button>
-                      + Add User
-                    </Button>
+                    <Button>+ Add User</Button>
                   </Link>
                 </span>
               </div>
@@ -80,7 +75,9 @@ class UsersPage extends Component {
                 <Link key={user.id} to={`/user/${user.id}`}>
                   <div className={s.userContainer}>
                     <div className={s.userInfoContainer}>
-                      <h3>{user.lastName}, {user.firstName}</h3>
+                      <h3>
+                        {user.lastName}, {user.firstName}
+                      </h3>
                       <p>Tickets: {user.tickets}</p>
                     </div>
                   </div>

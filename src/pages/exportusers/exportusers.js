@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import { Loading } from '@dmsi/wedgekit';
 
 import Header from '../../components/header/header';
-import Firebase from '../../fire';
+import Api from '../../utils/api';
 
 class ExportUsersPage extends Component {
   constructor(props) {
@@ -16,34 +16,27 @@ class ExportUsersPage extends Component {
   }
 
   componentDidMount() {
-    const db = Firebase.firestore();
+    const sort = (users) =>
+      users.sort((a, b) => {
+        const aName = `${a.lastName}, ${a.firstName}`;
+        const bName = `${b.lastName}, ${b.firstName}`;
+        return aName < bName ? -1 : aName > bName ? 1 : 0; // eslint-disable-line
+      });
 
-    const sort = (docs) => docs.sort((a, b) => {
-      const aName = `${a.lastName}, ${a.firstName}`;
-      const bName = `${b.lastName}, ${b.firstName}`;
-      return aName < bName ? -1 : aName > bName ? 1 : 0; // eslint-disable-line
-    });
+    Api.get('/users', true).then(([err, data]) => {
+      if (err) {
+        // eslint-disable-next-line no-console
+        console.log('Error getting users', err);
+        return;
+      }
 
-    const usersRef = db.collection('users');
-
-    this.usersUpdateUnsubscribe = usersRef.onSnapshot({
-      next: (snapshot) => {
+      if (data && data.data) {
         this.setState({
-          users: sort(snapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id }))),
+          users: sort(data.data.map(({ attributes }) => attributes)),
           loading: false,
         });
-      },
-      error: (err) => {
-        // eslint-disable-next-line no-console
-        console.log('Error updating documents', err);
-      },
+      }
     });
-  }
-
-  componentWillUnmount() {
-    if (this.usersUpdateUnsubscribe) {
-      this.usersUpdateUnsubscribe();
-    }
   }
 
   render() {
@@ -61,7 +54,9 @@ class ExportUsersPage extends Component {
         >
           <div>First Name,Last Name,Username,Password</div>
           {this.state.users.map((user) => (
-            <div key={user.id}>{user.firstName},{user.lastName},{user.username},{user.password}</div>
+            <div key={user.id}>
+              {user.firstName},{user.lastName},{user.username},{user.password}
+            </div>
           ))}
         </div>
       </div>

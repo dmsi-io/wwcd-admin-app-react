@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { Loading, Button } from '@dmsi/wedgekit';
 
 import Header from '../../components/header/header';
-import Firebase from '../../fire';
+import Api from '../../utils/api';
 
 import s from './prizes.module.scss';
 
@@ -19,38 +19,33 @@ class PrizesPage extends Component {
   }
 
   componentDidMount() {
-    const db = Firebase.firestore();
+    Api.get('/prizes').then(
+      ([err, data]) => {
+        if (err) {
+          // eslint-disable-next-line no-console
+          console.log('Error getting prizes', err);
+          return;
+        }
 
-    const prizesRef = db.collection('prizes');
-
-    this.prizeUpdateUnsubscribe = prizesRef.onSnapshot({
-      next: (snapshot) => {
-        const prizes = snapshot.docs.map((prize) => ({
-          ...prize.data(),
-          id: prize.id,
-        })).sort((a, b) => {
-          if (a.title < b.title) {
-            return -1;
-          }
-          return a.title > b.title ? 1 : 0;
-        });
-
-        this.setState({
-          prizes,
-          loading: false,
-        });
+        if (data && data.data) {
+          this.setState({
+            prizes: data.data
+              .map(({ attributes }) => attributes)
+              .sort((a, b) => {
+                if (a.title < b.title) {
+                  return -1;
+                }
+                return a.title > b.title ? 1 : 0;
+              }),
+            loading: false,
+          });
+        }
       },
-      error: (err) => {
+      (err) => {
         // eslint-disable-next-line no-console
-        console.log('Error getting documents', err);
+        console.log('Error getting prizes', err);
       },
-    });
-  }
-
-  componentWillUnmount() {
-    if (this.prizeUpdateUnsubscribe) {
-      this.prizeUpdateUnsubscribe();
-    }
+    );
   }
 
   render() {
@@ -64,9 +59,7 @@ class PrizesPage extends Component {
               <h1>Prizes</h1>
               <span>
                 <Link to="/prize">
-                  <Button>
-                    + Add Prize
-                  </Button>
+                  <Button>+ Add Prize</Button>
                 </Link>
               </span>
             </div>
@@ -74,22 +67,17 @@ class PrizesPage extends Component {
               {this.state.prizes.map((prize) => (
                 <Link key={prize.id} to={`/prize/${prize.id}`}>
                   <div className={s.prizeContainer}>
-                    {
-                      prize.image !== '' &&
+                    {prize.image !== null && (
                       <div className={s.prizeImageContainer}>
-                        <img
-                          className={s.prizeImage}
-                          src={prize.image}
-                          alt="Prize"
-                        />
+                        <img className={s.prizeImage} src={prize.image} alt="Prize" />
                       </div>
-                    }
+                    )}
                     <div className={s.prizeInfoContainer}>
                       <h3>{prize.title}</h3>
                       <p>{prize.description}</p>
-                      {prize.category !== undefined && prize.category !== '' &&
+                      {prize.category !== undefined && prize.category !== '' && (
                         <p>Category: {prize.category}</p>
-                      }
+                      )}
                     </div>
                   </div>
                 </Link>
