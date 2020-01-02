@@ -242,7 +242,7 @@ class DrawingModal extends Component {
             <div className={s.bowlBackground}>
               <div className={s.bowl}>
                 <div />
-                <span>DMSi Christmas Party</span>
+                <span>DMSi Holiday Party</span>
               </div>
             </div>
           </Anime>
