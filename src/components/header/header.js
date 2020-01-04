@@ -3,7 +3,7 @@ import { withRouter, Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { useSelector, useDispatch } from 'react-redux';
 
-import { Button } from '@dmsi/wedgekit';
+import { Button } from '@wedgekit/core';
 
 import { userLogout } from '../../redux/modules/userLogout';
 

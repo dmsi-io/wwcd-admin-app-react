@@ -4,7 +4,6 @@ import { Provider as ReduxProvider } from 'react-redux';
 import PropTypes from 'prop-types';
 
 import 'video-react/dist/video-react.css';
-import '@dmsi/wedgekit/dist/wedgekit.css';
 
 import store from './redux/store';
 
