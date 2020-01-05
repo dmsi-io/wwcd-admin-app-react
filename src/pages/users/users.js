@@ -1,7 +1,9 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 
-import { Loading, Button } from '@dmsi/wedgekit';
+import { Loading, Button, Card, StackedCard } from '@wedgekit/core';
+import Layout from '@wedgekit/layout';
+import { Title, Text } from '@wedgekit/primitives';
 
 import Header from '../../components/header/header';
 import Api from '../../utils/api';
@@ -53,39 +55,35 @@ class UsersPage extends Component {
       <div>
         <Header />
         {this.state.loading && <Loading />}
-        <div className={s.contentContainer}>
-          <div>
-            <div className={s.usersHeader}>
-              <h1>Users</h1>
-              <div>
-                <span style={{ marginRight: '10px' }}>
-                  <Link to="/users/export">
-                    <Button>Export Users</Button>
-                  </Link>
-                </span>
-                <span>
-                  <Link to="/user">
-                    <Button>+ Add User</Button>
-                  </Link>
-                </span>
-              </div>
-            </div>
-            <div className={s.usersContainer}>
+        <Card className={s.contentContainer}>
+          <Layout.Grid columns={[1]} multiplier={4} areas={[]}>
+            <Layout.Grid columns={['repeat(2, minmax(0, max-content))']} areas={[]} align="center" justify="space-between">
+              <Title level={1} elementLevel={1}>Users</Title>
+              <Layout.Grid columns={['repeat(2, minmax(0, max-content))']} areas={[]} align="center" mutliplier={2}>
+                <Link to="/users/export">
+                  <Button>Export Users</Button>
+                </Link>
+                <Link to="/user">
+                  <Button domain="primary">+ Add User</Button>
+                </Link>
+              </Layout.Grid>
+            </Layout.Grid>
+            <Layout.Grid columns={[1]} multiplier={2} areas={[]}>
               {this.state.users.map((user) => (
                 <Link key={user.id} to={`/user/${user.id}`}>
-                  <div className={s.userContainer}>
-                    <div className={s.userInfoContainer}>
-                      <h3>
+                  <StackedCard compact>
+                    <Layout.Grid columns={['repeat(2, minmax(0, max-content))']} areas={[]} multiplier={2} align="center" justify="space-between">
+                      <Title level={3} elementLevel={3}>
                         {user.lastName}, {user.firstName}
-                      </h3>
-                      <p>Tickets: {user.tickets}</p>
-                    </div>
-                  </div>
+                      </Title>
+                      <Text>Tickets: {user.tickets}</Text>
+                    </Layout.Grid>
+                  </StackedCard>
                 </Link>
               ))}
-            </div>
-          </div>
-        </div>
+            </Layout.Grid>
+          </Layout.Grid>
+        </Card>
       </div>
     );
   }

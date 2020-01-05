@@ -1,13 +1,25 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Redirect } from 'react-router-dom';
+import styled from 'styled-components';
 
-import { Loading, TextInput, Button, NewSelect, Option, Alerts } from '@dmsi/wedgekit';
+import { Loading, Input, Button, Select, Option, Alert, Card } from '@wedgekit/core';
+import Form, { Field } from '@wedgekit/form';
+import Layout from '@wedgekit/layout';
+import { Label, Title } from '@wedgekit/primitives';
 
 import Api from '../../utils/api';
 import Header from '../../components/header/header';
 
 import s from './prize.module.scss';
+
+const ImageContainer = styled.div`
+  width: 100%;
+  
+  img {
+    width: 100%;
+  }
+`;
 
 class PrizePage extends Component {
   constructor(props) {
@@ -105,19 +117,14 @@ class PrizePage extends Component {
     }
   };
 
-  onFormSubmit = async (e) => {
-    e.preventDefault();
+  onFormSubmit = async ({ title, description, category }) => {
 
     this.setState({ loading: true });
-
-    const category = this.state.selectedCategory;
 
     if (!category && category !== 0) {
       this.setState({ errors: ['A category must be selected'], loading: false });
       return;
     }
-
-    const { title } = this.state;
 
     if (!title) {
       this.setState({ errors: ['The prize must have a title'], loading: false });
@@ -128,8 +135,8 @@ class PrizePage extends Component {
 
     const formData = new FormData();
 
-    formData.append('title', this.state.title);
-    formData.append('description', this.state.description);
+    formData.append('title', title);
+    formData.append('description', description);
     formData.append('categoryId', category);
 
     if (this.state.image !== this.state.origImage) {
@@ -200,101 +207,110 @@ class PrizePage extends Component {
 
   render() {
     return (
-      <div className={s.prizeContainer}>
+      <div>
         <Header />
         {this.state.loading && <Loading />}
         {this.state.notFound || this.state.complete ? (
           <Redirect to="/prizes" />
         ) : (
-          <form id="prizeForm" className={s.contentContainer} onSubmit={this.onFormSubmit}>
-            <h1>Prize</h1>
-            {this.state.errors.length > 0 ? (
-              <Alerts alerts={this.state.errors} onClose={this.onApiErrorClose} />
-            ) : null}
-            <fieldset>
-              <label htmlFor="title">Title</label>
-              <TextInput
-                id="title"
-                name="title"
-                placeholder="Title"
-                maxLength={100}
-                nativeClear
-                size="large"
-                value={this.state.title}
-                onChange={this.onInputChange}
-              />
-            </fieldset>
-            <fieldset>
-              <label htmlFor="title">Category</label>
-              <div style={{ display: 'flex', flexDirection: 'row' }}>
-                <div className={s.selectedCategory}>
-                  <NewSelect
-                    context="default"
-                    label="Category"
-                    labelHidden
-                    onChange={(selectedCategory) => this.setState({ selectedCategory })}
-                    value={this.state.selectedCategory}
-                    placeholder="Select a Category"
-                  >
-                    {this.state.categories.map((category) => (
-                      <Option key={category.id} value={category.id}>
-                        {category.display}
-                      </Option>
-                    ))}
-                  </NewSelect>
-                </div>
-                <div style={{ flex: 1 }} />
-              </div>
-            </fieldset>
-            <fieldset>
-              <label htmlFor="description">Description</label>
-              <TextInput
-                id="description"
-                name="description"
-                placeholder="Description"
-                maxLength={1000}
-                nativeClear
-                size="large"
-                value={this.state.description}
-                onChange={this.onInputChange}
-                elementType="textarea"
-              />
-            </fieldset>
-            <fieldset>
-              <label htmlFor="image">Image</label>
-              <br />
-              {this.state.image != null && this.state.image !== '' && (
-                <img alt="Prize" src={this.state.image} />
+          <Card className={s.contentContainer}>
+            <Form onSubmit={this.onFormSubmit}>
+              {({ formProps }) => (
+                <form {...formProps}>
+                  <Title level={1} elementLevel={1}>Prize</Title>
+                  {
+                    this.state.errors.map((error) => (
+                      <Alert key={error.detail} detail={error.detail} onClose={this.onApiErrorClose}>
+                        {error.title}
+                      </Alert>
+                    ))
+                  }
+                  <Layout.Grid columns={[1]} areas={[]} multiplier={3}>
+                    <Field
+                      label="Title"
+                      name="title"
+                      defaultValue={this.state.title}
+                    >
+                      {({ fieldProps }) => (
+                        <Input
+                          {...fieldProps}
+                          fullWidth
+                          placeholder="Title"
+                          maxLength={100}
+                        />
+                      )}
+                    </Field>
+                    <Field
+                      label="Category"
+                      name="category"
+                      defaultValue={this.state.selectedCategory}
+                    >
+                      {({ fieldProps }) => (
+                        <Select
+                          {...fieldProps}
+                          placeholder="Select a Category"
+                        >
+                          {this.state.categories.map((category) => (
+                            <Option key={category.id} value={category.id}>
+                              {category.display}
+                            </Option>
+                          ))}
+                        </Select>
+                      )}
+                    </Field>
+                    <Field
+                      label="Description"
+                      name="description"
+                      defaultValue={this.state.description}
+                    >
+                      {({ fieldProps }) => (
+                        <Input
+                          {...fieldProps}
+                          fullWidth
+                          rows={5}
+                          placeholder="Description"
+                          maxLength={1000}
+                          elementType="textarea"
+                        />
+                      )}
+                    </Field>
+                    <Layout.Grid columns={[1]} areas={[]} multiplier={2}>
+                      <Label htmlFor="image">Image</Label>
+                      {this.state.image != null && this.state.image !== '' && (
+                        <ImageContainer>
+                          <img alt="Prize" src={this.state.image} />
+                        </ImageContainer>
+                      )}
+                      <input
+                        ref={this.imageInputRef}
+                        name="image"
+                        type="file"
+                        accept="image/*"
+                        onChange={this.onFileChange}
+                      />
+                    </Layout.Grid>
+                    <Layout.Grid columns={['repeat(2, minmax(0, max-content))']} areas={[]} multiplier={2} justify="space-between">
+                      <Button domain="primary" type="submit">
+                        Save
+                      </Button>
+                      <Layout.Grid columns={['repeat(2, minmax(0, max-content))']} areas={[]} multiplier={2} justify="space-between">
+                        {this.props.match.params.id && (
+                          <Button domain="danger" onClick={this.onDeletePrize}>
+                            Delete Prize
+                          </Button>
+                        )}
+                        {this.props.match.params.id && (
+                          <Button domain="warning" onClick={this.onClearUsed}>
+                            Clear Used For Prize Tickets
+                          </Button>
+                        )}
+                      </Layout.Grid>
+                    </Layout.Grid>
+                  </Layout.Grid>
+                </form>
               )}
-              <br />
-              <input
-                ref={this.imageInputRef}
-                name="image"
-                type="file"
-                accept="image/*"
-                onChange={this.onFileChange}
-              />
-            </fieldset>
-            <div className={s.buttonHolder}>
-              <button type="submit" className={s.saveButton}>
-                Save
-              </button>
-              {this.props.match.params.id && (
-                <Button onClick={this.onDeletePrize} className={s.deleteButton}>
-                  Delete Prize
-                </Button>
-              )}
-              {this.props.match.params.id && (
-                <Button
-                  onClick={this.onClearUsed}
-                  className={s.saveButton}
-                  style={{ marginLeft: 30 }}
-                >
-                  Clear Used For Prize Tickets
-                </Button>
-              )}
-            </div>
-          </form>
+            </Form>
+          </Card>
         )}
       </div>
     );

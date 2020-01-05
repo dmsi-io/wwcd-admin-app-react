@@ -1775,6 +1775,11 @@
   resolved "https://registry.yarnpkg.com/@wedgekit/icons/-/icons-1.1.6.tgz#0680f3d8625576df26e76ba599b31141da89036e"
   integrity sha512-MzsdS90LKsck+S9Pt8WXPLE2+9qessWV/h1iLhgyjrT8F+VFd46rSXAEgWdtwd6RKCBh37vHdTTE9BdYUvS7Qg==
 
+"@wedgekit/icons@^1.1.7":
+  version "1.1.7"
+  resolved "https://registry.yarnpkg.com/@wedgekit/icons/-/icons-1.1.7.tgz#e883814bac46db0a3bee71bdc1a82a56a276300d"
+  integrity sha512-R4nW713Wo19DbR20E95p7vWraWuRwkIYTxDPQ6v/pvdIQnpPkf7yQ2PplrBlAFe+m49qJLWwqVHAzXFI90Sozw==
+
 "@wedgekit/illustrations@1.2.5":
   version "1.2.5"
   resolved "https://registry.yarnpkg.com/@wedgekit/illustrations/-/illustrations-1.2.5.tgz#4e06a86736971d3b0c789ba437e4fa4f0b7bdd85"

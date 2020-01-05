@@ -94,7 +94,6 @@ class LoginPage extends Component {
                   <div className={s.imgContainer}>
                     <img src={logoImg} alt="Logo" />
                   </div>
-                  {console.log(this.state.errors)}
                   {
                     this.state.errors.map((error) => (
                       <Alert
