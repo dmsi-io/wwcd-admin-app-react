@@ -3,7 +3,6 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@dmsi/wedgekit": "^9.2.0",
     "@wedgekit/color": "^3.0.1",
     "@wedgekit/core": "^11.0.61",
     "@wedgekit/form": "^0.3.0",
