@@ -2,12 +2,16 @@ import React, { Component } from 'react';
 import { Redirect } from 'react-router-dom';
 import PropTypes from 'prop-types';
 
-import { Alerts, TextInput, Loading } from '@dmsi/wedgekit';
+import { Alert, Input, Loading, Button, Card } from '@wedgekit/core';
+import Form, { Field } from '@wedgekit/form';
+import WedgeKitLayout from '@wedgekit/layout';
 
 import logoImg from '../../resources/logo.png';
 
 import api from '../../utils/api';
 import storage from '../../utils/storage';
+
+import Layout from './styled/Layout';
 
 import s from './login.module.scss';
 
@@ -22,28 +26,20 @@ class LoginPage extends Component {
 
     this.state = {
       username: '',
-      password: '',
       errors: [],
       loading: false,
       signedIn: false,
     };
   }
 
-  onInputChange = (value, name) => {
-    this.setState({
-      [name]: value,
-    });
-  };
-
-  onFormSubmit = async (e) => {
-    e.preventDefault();
+  onFormSubmit = async ({ username, password }) => {
 
     this.setState({ loading: true });
 
     const data = {
       attributes: {
-        username: this.state.username.toLowerCase(),
-        password: this.state.password,
+        username: username.toLowerCase(),
+        password,
       },
     };
 
@@ -82,56 +78,94 @@ class LoginPage extends Component {
     }
 
     return (
-      <div className={s.layout}>
-        <form id="loginForm" className={s.authContainer} onSubmit={this.onFormSubmit}>
-          <div className={s.imgContainer}>
-            <img src={logoImg} alt="Logo" />
-          </div>
-          {this.state.errors.length > 0 ? (
-            <Alerts
-              alerts={this.state.errors.map((error) => error.detail)}
-              onClose={this.onApiErrorClose}
-            />
-          ) : null}
-          {this.state.loading && <Loading inline />}
-          <fieldset className="form-group">
-            <TextInput
-              autoCapitalize="off"
-              autoCorrect="off"
-              autoFocus={!this.state.username}
-              id="username"
-              invalid={!this.state.username && this.state.error && this.state.error.status}
-              name="username"
-              placeholder="Username"
-              maxLength={30}
-              nativeClear
-              size="large"
-              value={this.state.username}
-              onChange={this.onInputChange}
-            />
-          </fieldset>
-          <fieldset className="form-group">
-            <TextInput
-              autoCapitalize="off"
-              autoCorrect="off"
-              autoFocus={this.state.username}
-              type="password"
-              id="password"
-              invalid={!this.state.password && this.state.error && this.state.error.status}
-              name="password"
-              placeholder="Password"
-              maxLength={30}
-              nativeClear
-              size="large"
-              value={this.state.password}
-              onChange={this.onInputChange}
-            />
-          </fieldset>
-          <button type="submit" className="btn btn--primary pull-xs-right">
-            Log In
-          </button>
-        </form>
-      </div>
+      <Layout>
+        <Card>
+          <Form id="loginForm" onSubmit={this.onFormSubmit}>
+            {({
+              formProps,
+              valid,
+              dirty,
+              submitFailed,
+              submitting,
+              submitError,
+            }) => (
+              <form {...formProps}>
+                <WedgeKitLayout.Grid areas={[]} columns={[1]} multiplier={2}>
+                  <div className={s.imgContainer}>
+                    <img src={logoImg} alt="Logo" />
+                  </div>
+                  {
+                    this.state.errors.map((error) => (
+                      <Alert
+                        key={error.detail}
+                        detail={error.detail}
+                        onClose={this.onApiErrorClose}
+                      >
+                        {error.title}
+                      </Alert>
+                    ))
+                  }
+                  {this.state.loading && <Loading inline />}
+                  <Field
+                    label="User Name"
+                    name="username"
+                    defaultValue=""
+                    invalid={submitFailed && submitError}
+                  >
+                    {({ fieldProps }) => (
+                      <Input
+                        {...fieldProps}
+                        labelHidden
+                        id="username"
+                        placeholder="Username"
+                        autoCapitalize="off"
+                        autoCorrect="off"
+                        autoFocus={!this.state.username}
+                        maxLength={30}
+                        fullWidth
+                      />
+                    )}
+                  </Field>
+                  <Field
+                    label="Password"
+                    name="password"
+                    defaultValue=""
+                    invalid={submitFailed && submitError}
+                  >
+                    {({ fieldProps }) => (
+                      <Input
+                        {...fieldProps}
+                        labelHidden
+                        autoCapitalize="off"
+                        autoCorrect="off"
+                        autoFocus={this.state.username}
+                        type="password"
+                        id="password"
+                        placeholder="Password"
+                        maxLength={30}
+                        fullWidth
+                      />
+                    )}
+                  </Field>
+                  <WedgeKitLayout.Grid areas={[]} columns={['minmax(0, max-content)']} justify="end">
+                    <Button
+                      domain="primary"
+                      type="submit"
+                      disabled={
+                        !dirty ||
+                        submitting ||
+                        !valid
+                      }
+                    >
+                      Log In
+                    </Button>
+                  </WedgeKitLayout.Grid>
+                </WedgeKitLayout.Grid>
+              </form>
+            )}
+          </Form>
+        </Card>
+      </Layout>
     );
   }
 }

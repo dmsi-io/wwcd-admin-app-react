@@ -2,7 +2,10 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Redirect } from 'react-router-dom';
 
-import { Loading, TextInput, Button } from '@dmsi/wedgekit';
+import { Loading, Input, Button, Card } from '@wedgekit/core';
+import Form, { Field } from '@wedgekit/form';
+import Layout from '@wedgekit/layout';
+import { Title } from '@wedgekit/primitives';
 
 import Api from '../../utils/api';
 import Header from '../../components/header/header';
@@ -67,15 +70,7 @@ class UserPage extends Component {
     }
   }
 
-  onInputChange = (value, name) => {
-    this.setState({
-      [name]: value,
-    });
-  };
-
-  onFormSubmit = async (e) => {
-    e.preventDefault();
-
+  onFormSubmit = async ({ firstName, lastName, username, password, tickets }) => {
     this.setState({
       loading: true,
       ticketsInvalid: false,
@@ -102,7 +97,7 @@ class UserPage extends Component {
       }
       if (res && res.data) {
         const found = res.data.find(
-          ({ attributes }) => attributes.username === this.state.username.toLowerCase(),
+          ({ attributes }) => attributes.username === username.toLowerCase(),
         );
         if (found) {
           this.setState({
@@ -116,11 +111,11 @@ class UserPage extends Component {
 
     const data = {
       attributes: {
-        firstName: this.state.firstName,
-        lastName: this.state.lastName,
-        username: this.state.username.toLowerCase(),
-        password: this.state.password,
-        tickets: Number(this.state.tickets),
+        firstName,
+        lastName,
+        username: username.toLowerCase(),
+        password,
+        tickets: Number(tickets),
       },
     };
 
@@ -161,109 +156,136 @@ class UserPage extends Component {
 
   onGenerateUsername = () => {
     if (this.state.firstName.length > 0 && this.state.lastName.length > 0) {
-      this.setState({
-        username: `${this.state.firstName.slice(0, 1)}${this.state.lastName}`.toLowerCase(),
-      });
+      return (`${this.state.firstName.slice(0, 1)}${this.state.lastName}`).toLowerCase();
     }
+
+    return '';
   };
 
   render() {
     return (
-      <div className={s.userContainer}>
+      <div>
         <Header />
         {this.state.loading && <Loading />}
         {this.state.notFound || this.state.complete ? (
           <Redirect to="/users" />
         ) : (
-          <form id="userForm" className={s.contentContainer} onSubmit={this.onFormSubmit}>
-            <h1>User</h1>
-            <fieldset>
-              <label htmlFor="firstName">First Name</label>
-              <TextInput
-                id="firstName"
-                name="firstName"
-                placeholder="First Name"
-                maxLength={100}
-                nativeClear
-                size="large"
-                value={this.state.firstName}
-                onChange={this.onInputChange}
-              />
-            </fieldset>
-            <fieldset>
-              <label htmlFor="lastName">Last Name</label>
-              <TextInput
-                id="lastName"
-                name="lastName"
-                placeholder="Last Name"
-                maxLength={100}
-                nativeClear
-                size="large"
-                value={this.state.lastName}
-                onChange={this.onInputChange}
-              />
-            </fieldset>
-            <fieldset>
-              <label htmlFor="username">Username</label>
-              <TextInput
-                id="username"
-                name="username"
-                placeholder="Username"
-                maxLength={50}
-                nativeClear
-                size="large"
-                value={this.state.username}
-                onChange={this.onInputChange}
-                error={this.state.usernameInvalid ? 'Username already taken' : ''}
-              />
-              <Button onClick={this.onGenerateUsername} style={{ marginTop: '15px' }}>
-                Generate Username
-              </Button>
-            </fieldset>
-            <fieldset>
-              <label htmlFor="password">Password</label>
-              <TextInput
-                id="password"
-                name="password"
-                placeholder="Password"
-                maxLength={50}
-                nativeClear
-                size="large"
-                value={this.state.password}
-                onChange={this.onInputChange}
-              />
-              <Button
-                onClick={() => this.setState({ password: generatePassword() })}
-                style={{ marginTop: '15px' }}
-              >
-                Generate Password
-              </Button>
-            </fieldset>
-            <fieldset>
-              <label htmlFor="tickets">Tickets</label>
-              <TextInput
-                id="tickets"
-                name="tickets"
-                placeholder="Tickets"
-                maxLength={10}
-                nativeClear
-                size="large"
-                value={this.state.tickets}
-                onChange={this.onInputChange}
-                error={this.state.ticketsInvalid ? 'Tickets must be a nubber' : ''}
-              />
-            </fieldset>
-            <div className={s.buttonHolder}>
-              <button type="submit" className={s.saveButton}>
-                Save
-              </button>
-              {this.props.match.params.id && (
-                <Button onClick={this.onDeleteUser} className={s.deleteButton}>
-                  Delete User
-                </Button>
+          <Card className={s.contentContainer}>
+            <Form onSubmit={this.onFormSubmit}>
+              {({ formProps }) => (
+                <form {...formProps}>
+                  <Layout.Grid columns={[1]} areas={[]} multiplier={4}>
+                    <Title level={1} elementLevel={1}>User</Title>
+                    <Layout.Grid columns={[1]} areas={[]} multiplier={3}>
+                      <Field
+                        name="firstName"
+                        label="First Name"
+                        defaultValue={this.state.firstName}
+                      >
+                        {({ fieldProps }) => (
+                          <Input
+                            {...fieldProps}
+                            fullWidth
+                            placeholder="First Name"
+                            onChange={(v) => {
+                              fieldProps.onChange(v);
+                              this.setState({ firstName: v });
+                            }}
+                            maxLength={100}
+                          />
+                        )}
+                      </Field>
+                      <Field
+                        name="lastName"
+                        label="Last Name"
+                        defaultValue={this.state.lastName}
+                      >
+                        {({ fieldProps }) => (
+                          <Input
+                            {...fieldProps}
+                            fullWidth
+                            placeholder="Last Name"
+                            onChange={(v) => {
+                              fieldProps.onChange(v);
+                              this.setState({ lastName: v });
+                            }}
+                            maxLength={100}
+                          />
+                        )}
+                      </Field>
+                      <Field
+                        label="Username"
+                        name="username"
+                        defaultValue={this.state.username}
+                      >
+                        {({ fieldProps }) => (
+                          <Layout.Grid columns={[1, 'minmax(0, max-content)']} multiplier={2} areas={[]} align="end">
+                            <Input
+                              {...fieldProps}
+                              placeholder="Username"
+                              maxLength={50}
+                              fullWidth
+                              error={this.state.usernameInvalid ? 'Username already taken' : ''}
+                            />
+                            <Button onClick={() => fieldProps.onChange(this.onGenerateUsername())}>
+                              Generate Username
+                            </Button>
+                          </Layout.Grid>
+                        )}
+                      </Field>
+                      <Field
+                        name="password"
+                        label="Password"
+                        defaultValue={this.state.password}
+                      >
+                        {({ fieldProps }) => (
+                          <Layout.Grid columns={[1, 'minmax(0, max-content)']} multiplier={2} areas={[]} align="end">
+                            <Input
+                              {...fieldProps}
+                              placeholder="Password"
+                              maxLength={50}
+                              fullWidth
+                            />
+                            <Button
+                              onClick={() => fieldProps.onChange(generatePassword())}
+                              domain="primary"
+                            >
+                              Generate Password
+                            </Button>
+                          </Layout.Grid>
+                        )}
+                      </Field>
+                      <Field
+                        label="Tickets"
+                        name="tickets"
+                        defaultValue={this.state.tickets}
+                        fullWidth
+                      >
+                        {({ fieldProps }) => (
+                          <Input
+                            {...fieldProps}
+                            placeholder="Ticket Count"
+                            maxLength={10}
+                            error={this.state.ticketsInvalid ? 'Tickets must be a nubber' : ''}
+                          />
+                        )}
+                      </Field>
+                    </Layout.Grid>
+                    <Layout.Grid columns={['repeat(2, minmax(0, max-content))']} justify="space-between" areas={[]}>
+                      {this.props.match.params.id && (
+                        <Button domain="danger" onClick={this.onDeleteUser}>
+                          Delete User
+                        </Button>
+                      )}
+                      <Button domain="primary" type="submit">
+                        Save
+                      </Button>
+                    </Layout.Grid>
+                  </Layout.Grid>
+                </form>
               )}
-            </div>
-          </form>
+            </Form>
+          </Card>
         )}
       </div>
     );

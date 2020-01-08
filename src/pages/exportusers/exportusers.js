@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-import { Loading } from '@dmsi/wedgekit';
+import { Loading } from '@wedgekit/core';
 
 import Header from '../../components/header/header';
 import Api from '../../utils/api';

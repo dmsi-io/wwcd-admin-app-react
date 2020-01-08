@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import Anime from 'react-anime';
 
-import { Modal } from '@dmsi/wedgekit';
+import { Modal } from '@wedgekit/core';
 
 import s from './drawingModal.module.scss';
 
@@ -53,7 +53,7 @@ class DrawingModal extends Component {
     const { onExit } = this.props;
     return (
       <Modal fullscreen onExit={onExit}>
-        <div>
+        <div style={{ position: 'relative', width: '100vw', height: '90vh' }}>
           <Anime
             key="1"
             translateX={[
