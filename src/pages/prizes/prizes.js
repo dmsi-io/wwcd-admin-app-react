@@ -15,7 +15,7 @@ const ImageContainer = styled.div`
   width: 100px;
   height: 100px;
   position: relative;
-  
+
   img {
     width: 100%;
     height: 100%;
@@ -75,10 +75,22 @@ class PrizesPage extends Component {
         {this.state.loading && <Loading />}
         <Card className={s.contentContainer}>
           <Layout.Grid columns={[1]} multiplier={4} areas={[]}>
-            <Layout.Grid columns={['repeat(2, minmax(0, max-content))']} areas={[]} align="center" justify="space-between">
-              <Title level={1} elementLevel={1}>Prizes</Title>
-              <Layout.Grid columns={['repeat(2, minmax(0, max-content))']} areas={[]} align="center" mutliplier={2}>
-                <Link to="/user">
+            <Layout.Grid
+              columns={['repeat(2, minmax(0, max-content))']}
+              areas={[]}
+              align="center"
+              justify="space-between"
+            >
+              <Title level={1} elementLevel={1}>
+                Prizes
+              </Title>
+              <Layout.Grid
+                columns={['repeat(2, minmax(0, max-content))']}
+                areas={[]}
+                align="center"
+                mutliplier={2}
+              >
+                <Link to="/prize">
                   <Button>+ Add Prize</Button>
                 </Link>
               </Layout.Grid>
@@ -87,17 +99,26 @@ class PrizesPage extends Component {
               {this.state.prizes.map((prize) => (
                 <Link key={prize.id} to={`/prize/${prize.id}`}>
                   <StackedCard>
-                    <Layout.Grid align="start" columns={['minmax(0, max-content)', 1]} multiplier={2} areas={[]}>
+                    <Layout.Grid
+                      align="start"
+                      columns={['minmax(0, max-content)', 1]}
+                      multiplier={2}
+                      areas={[]}
+                    >
                       {prize.image !== null && (
                         <ImageContainer>
                           <img src={prize.image} alt="Prize" />
                         </ImageContainer>
                       )}
                       <Layout.Grid columns={[1]} areas={[]} multiplier={2}>
-                        <Title level={3} elementLevel={3}>{prize.title}</Title>
+                        <Title level={3} elementLevel={3}>
+                          {prize.title}
+                        </Title>
                         <Text>{prize.description}</Text>
                         {prize.category !== undefined && prize.category !== '' && (
-                          <Text><strong>Category: {prize.category}</strong></Text>
+                          <Text>
+                            <strong>Category: {prize.category}</strong>
+                          </Text>
                         )}
                       </Layout.Grid>
                     </Layout.Grid>
