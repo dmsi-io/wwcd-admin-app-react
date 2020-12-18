@@ -40,48 +40,85 @@ const Home = () => {
       <Grid columns={[1]} multiplier={4} areas={[]}>
         <Link to="/draw">
           <Card>
-            <Layout.Grid columns={['repeat(2, minmax(0, max-content))']} areas={[]} justify="space-between" align="center">
-              <Title level={1} elementLevel={2}>Draw for Prizes</Title>
+            <Layout.Grid
+              columns={['repeat(2, minmax(0, max-content))']}
+              areas={[]}
+              justify="space-between"
+              align="center"
+            >
+              <Title level={1} elementLevel={2}>
+                Draw for Prizes
+              </Title>
               <IconWidth iconWidth={24}>
-                <Icon>
-                  chevron_right
-                </Icon>
+                <Icon>chevron_right</Icon>
               </IconWidth>
             </Layout.Grid>
           </Card>
         </Link>
         <Link to="/prizes">
           <Card>
-            <Layout.Grid columns={['repeat(2, minmax(0, max-content))']} areas={[]} justify="space-between" align="center">
-              <Title level={1} elementLevel={2}>Prizes</Title>
+            <Layout.Grid
+              columns={['repeat(2, minmax(0, max-content))']}
+              areas={[]}
+              justify="space-between"
+              align="center"
+            >
+              <Title level={1} elementLevel={2}>
+                Prizes
+              </Title>
               <IconWidth iconWidth={24}>
-                <Icon>
-                  chevron_right
-                </Icon>
+                <Icon>chevron_right</Icon>
               </IconWidth>
             </Layout.Grid>
           </Card>
         </Link>
         <Link to="/users">
           <Card>
-            <Layout.Grid columns={['repeat(2, minmax(0, max-content))']} areas={[]} justify="space-between" align="center">
-              <Title level={1} elementLevel={2}>Users</Title>
+            <Layout.Grid
+              columns={['repeat(2, minmax(0, max-content))']}
+              areas={[]}
+              justify="space-between"
+              align="center"
+            >
+              <Title level={1} elementLevel={2}>
+                Users
+              </Title>
               <IconWidth iconWidth={24}>
-                <Icon>
-                  chevron_right
-                </Icon>
+                <Icon>chevron_right</Icon>
+              </IconWidth>
+            </Layout.Grid>
+          </Card>
+        </Link>
+        <Link to="/selections">
+          <Card>
+            <Layout.Grid
+              columns={['repeat(2, minmax(0, max-content))']}
+              areas={[]}
+              justify="space-between"
+              align="center"
+            >
+              <Title level={1} elementLevel={2}>
+                Selections
+              </Title>
+              <IconWidth iconWidth={24}>
+                <Icon>chevron_right</Icon>
               </IconWidth>
             </Layout.Grid>
           </Card>
         </Link>
         <Button onClick={clearUsed}>
           <Card>
-            <Layout.Grid columns={['repeat(2, minmax(0, max-content))']} areas={[]} justify="space-between" align="center">
-              <Title level={1} elementLevel={2}>Mark all tickets as unused</Title>
+            <Layout.Grid
+              columns={['repeat(2, minmax(0, max-content))']}
+              areas={[]}
+              justify="space-between"
+              align="center"
+            >
+              <Title level={1} elementLevel={2}>
+                Mark all tickets as unused
+              </Title>
               <IconWidth iconWidth={24}>
-                <Icon>
-                  check
-                </Icon>
+                <Icon>check</Icon>
               </IconWidth>
             </Layout.Grid>
           </Card>

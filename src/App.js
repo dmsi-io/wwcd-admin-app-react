@@ -16,6 +16,7 @@ import PrizesList from './pages/prizes/prizes';
 import User from './pages/user/user';
 import Users from './pages/users/users';
 import ExportUsers from './pages/exportusers/exportusers';
+import Selections from './pages/selections/selections';
 
 import './App.scss';
 import storage from './utils/storage';
@@ -62,6 +63,7 @@ const App = () => (
           <PrivateRoute path="/user/:id?" component={User} />
           <PrivateRoute path="/users/export" exact component={ExportUsers} />
           <PrivateRoute path="/draw" exact component={Draw} />
+          <PrivateRoute path="/selections" exact component={Selections} />
           <Route component={PageNotFound} />
         </Switch>
       </div>

@@ -33,7 +33,6 @@ class LoginPage extends Component {
   }
 
   onFormSubmit = async ({ username, password }) => {
-
     this.setState({ loading: true });
 
     const data = {
@@ -56,7 +55,7 @@ class LoginPage extends Component {
 
       this.props.setUserInfo({
         id: tokenData.data.id,
-        username: this.state.username.toLowerCase(),
+        username: username.toLowerCase(),
       });
 
       this.setState({
@@ -81,30 +80,17 @@ class LoginPage extends Component {
       <Layout>
         <Card>
           <Form id="loginForm" onSubmit={this.onFormSubmit}>
-            {({
-              formProps,
-              valid,
-              dirty,
-              submitFailed,
-              submitting,
-              submitError,
-            }) => (
+            {({ formProps, valid, dirty, submitFailed, submitting, submitError }) => (
               <form {...formProps}>
                 <WedgeKitLayout.Grid areas={[]} columns={[1]} multiplier={2}>
                   <div className={s.imgContainer}>
                     <img src={logoImg} alt="Logo" />
                   </div>
-                  {
-                    this.state.errors.map((error) => (
-                      <Alert
-                        key={error.detail}
-                        detail={error.detail}
-                        onClose={this.onApiErrorClose}
-                      >
-                        {error.title}
-                      </Alert>
-                    ))
-                  }
+                  {this.state.errors.map((error) => (
+                    <Alert key={error.detail} detail={error.detail} onClose={this.onApiErrorClose}>
+                      {error.title}
+                    </Alert>
+                  ))}
                   {this.state.loading && <Loading inline />}
                   <Field
                     label="User Name"
@@ -147,15 +133,15 @@ class LoginPage extends Component {
                       />
                     )}
                   </Field>
-                  <WedgeKitLayout.Grid areas={[]} columns={['minmax(0, max-content)']} justify="end">
+                  <WedgeKitLayout.Grid
+                    areas={[]}
+                    columns={['minmax(0, max-content)']}
+                    justify="end"
+                  >
                     <Button
                       domain="primary"
                       type="submit"
-                      disabled={
-                        !dirty ||
-                        submitting ||
-                        !valid
-                      }
+                      disabled={!dirty || submitting || !valid}
                     >
                       Log In
                     </Button>

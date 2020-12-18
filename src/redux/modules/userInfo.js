@@ -18,6 +18,7 @@ const initialState = {
 const userInfo = (state = initialState, action) => {
   switch (action.type) {
     case SET_USER_INFO:
+      console.log(action);
       return {
         ...state,
         id: action.id,
