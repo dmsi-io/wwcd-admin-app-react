@@ -2,6 +2,7 @@
   "name": "wwcd-admin",
   "version": "0.1.0",
   "private": true,
+  "homepage": "https://wwcdapi-lre7slnnqq-uc.a.run.app/",
   "dependencies": {
     "@wedgekit/color": "^3.0.1",
     "@wedgekit/core": "^11.0.61",
