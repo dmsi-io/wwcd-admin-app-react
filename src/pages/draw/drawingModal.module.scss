@@ -1,18 +1,21 @@
 .animatedContainer {
-  height: 50px;
-  width: 100px;
+  height: 80px;
+  width: 80px;
   position: absolute;
-
-  background-image: url('https://storage.googleapis.com/wwcd-storage/photos/ticket.png');
+  background-image: url(https://pixy.org/src/417/4175511.jpeg);
   background-size: contain;
+  background-repeat: round;
 
   > div {
-    top: 8px;
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    top: 24px;
     text-align: center;
     width: 100%;
-    font-size: 16px;
+    font-size: 9px;
     position: absolute;
-    line-height: 17px;
+    line-height: 14px;
+    font-weight: bold;
+    font-style: italic;
   }
 }
 
@@ -26,7 +29,7 @@
   z-index: 100;
 
   .bowl {
-    background-color: #0075C4;
+    background: radial-gradient(circle at 100px 100px, #0075C4, #000);
     height: 300px;
     width: 600px;
     border-radius: 0px 0px 300px 300px;
@@ -35,12 +38,13 @@
     left: calc(50% - 300px);
 
     > div {
+      background: radial-gradient(circle at 100px 100px, #0075C4, #000);
+      border-radius: 8px 8px 20px 20px;
       position: absolute;
       top: 0;
-      left: -2.5%;
-      width: 105%;
-      height: 40px;
-      background-color: #00486B;
+      left: -1.5%;
+      width: 103%;
+      height: 20px;
     }
 
     > span {
@@ -50,10 +54,10 @@
       -webkit-transform: translate(-50%, -50%);
       transform: translate(-50%, -50%);
       font-size: 4em;
-      color: #fff;
+      color: #ededed;
       text-align: center;
       line-height: 1.1em;
-      text-shadow: -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 2px 2px 0 #000;
+      text-shadow: 4px 3px 3px #000;
     }
   }
 }
