@@ -9,29 +9,30 @@
     "@wedgekit/icons": "^1.1.7",
     "@wedgekit/layout": "^0.4.2",
     "@wedgekit/primitives": "^1.3.12",
+    "camelcase": "^5.3.1",
+    "crypto-browserify": "^3.12.0",
     "history": "^4.10.1",
-    "lodash": "^4.17.15",
-    "moment": "^2.24.0",
-    "node-sass": "^4.13.0",
+    "lodash": "^4.17.21",
+    "moment": "^2.29.4",
     "prop-types": "^15.7.2",
     "react": "^16.12.0",
     "react-anime": "^2.2.0",
     "react-dom": "^16.12.0",
     "react-redux": "^7.1.3",
     "react-router-dom": "^5.1.2",
-    "react-scripts": "^3.3.0",
+    "react-scripts": "^5.0.1",
     "redux": "^4.0.4",
     "redux-batched-actions": "^0.4.1",
     "redux-devtools-extension": "^2.13.8",
+    "sass": "^1.69.5",
     "styled-components": "4.4.0",
     "video-react": "^0.14.1"
   },
   "prettier": "@dmsi/prettier-config",
   "scripts": {
-    "start": "react-scripts start",
+    "start": "react-scripts --openssl-legacy-provider start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject",
     "prettify": "prettier --write \"./**/*.js\""
   },
   "browserslist": [
@@ -41,12 +42,20 @@
     "not op_mini all"
   ],
   "devDependencies": {
+    "@babel/core": "^7.23.5",
+    "@babel/helper-builder-react-jsx": "^7.22.10",
+    "@babel/helper-call-delegate": "^7.12.13",
+    "@babel/helper-define-map": "^7.18.6",
+    "@babel/helper-regex": "^7.10.5",
     "@dmsi/eslint-config": "^3.2.0",
     "@dmsi/prettier-config": "^1.3.0",
+    "babel-plugin-dynamic-import-node": "^2.3.3",
     "eslint": "^6.7.2",
     "eslint-config-prettier": "^6.7.0",
     "eslint-plugin-react": "^7.17.0",
     "eslint-plugin-react-hooks": "^2.3.0",
+    "js-levenshtein": "^1.1.6",
+    "node-polyfill-webpack-plugin": "^2.0.1",
     "prettier": "^1.19.1"
   }
 }
