@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 
 import { Loading, Button, Card, StackedCard } from '@wedgekit/core';
+import colors from '@wedgekit/color';
 import Layout from '@wedgekit/layout';
 import { Title, Text } from '@wedgekit/primitives';
 
@@ -11,10 +12,41 @@ import Api from '../../utils/api';
 
 import s from './prizes.module.scss';
 
+const MultiplierNoImage = styled.p`
+  background-color: ${colors.R500};
+  border-radius: 50%;
+  height: 7rem;
+  width: 7rem;
+  font-size: 4rem;
+  line-height: 7rem;
+  text-align: center;
+  vertical-align: middle;
+  color: ${colors.N050};
+  margin: 0 0.5rem 0 0;
+`;
+
 const ImageContainer = styled.div`
-  width: 100px;
-  height: 100px;
+  width: 7rem;
+  height: 7rem;
   position: relative;
+  margin-right: 0.5rem;
+
+  p {
+    background-color: ${colors.R500};
+    border-radius: 50%;
+    height: 2rem;
+    width: 2rem;
+    font-size: 1.5rem;
+    line-height: 2rem;
+    text-align: center;
+    vertical-align: middle;
+    color: ${colors.N050};
+
+    position: absolute;
+    top: -2rem;
+    right: -0.5rem;
+    z-index: 1;
+  }
 
   img {
     width: 100%;
@@ -52,10 +84,9 @@ class PrizesPage extends Component {
             prizes: data.data
               .map(({ attributes }) => attributes)
               .sort((a, b) => {
-                if (a.title < b.title) {
-                  return -1;
-                }
-                return a.title > b.title ? 1 : 0;
+                const aTitle = a.title.toLowerCase();
+                const bTitle = b.title.toLowerCase();
+                return aTitle.localeCompare(bTitle);
               }),
             loading: false,
           });
@@ -105,8 +136,15 @@ class PrizesPage extends Component {
                       multiplier={2}
                       areas={[]}
                     >
-                      {prize.image !== null && (
+                      {prize.image === null ? (
+                        prize.multiplier && prize.multiplier > 1 ? (
+                          <MultiplierNoImage>x{prize.multiplier}</MultiplierNoImage>
+                        ) : null
+                      ) : (
                         <ImageContainer>
+                          {prize.multiplier && prize.multiplier > 1 ? (
+                            <p>x{prize.multiplier}</p>
+                          ) : null}
                           <img src={prize.image} alt="Prize" />
                         </ImageContainer>
                       )}

@@ -7,7 +7,6 @@ const getToken = () => {
   const token = storage.get('token');
   return `Bearer ${token}`;
 };
-
 const BASE_URL = 'https://wwcdapi-lre7slnnqq-uc.a.run.app';
 
 const makeRequest = (method, route, authNeeded, headers = {}, body = undefined) => {

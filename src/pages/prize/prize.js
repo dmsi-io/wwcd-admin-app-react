@@ -15,7 +15,7 @@ import s from './prize.module.scss';
 
 const ImageContainer = styled.div`
   width: 100%;
-  
+
   img {
     width: 100%;
   }
@@ -31,6 +31,7 @@ class PrizePage extends Component {
       description: '',
       image: '',
       loading: props.match.params.id !== undefined,
+      multiplier: 0,
       notFound: false,
       origImage: '',
       selectedCategory: '',
@@ -62,6 +63,7 @@ class PrizePage extends Component {
               title: a.title,
               description: a.description,
               image: a.image,
+              multiplier: a.multiplier ?? 1,
               origImage: a.image,
               selectedCategory: a.categoryId,
             });
@@ -117,8 +119,7 @@ class PrizePage extends Component {
     }
   };
 
-  onFormSubmit = async ({ title, description, category }) => {
-
+  onFormSubmit = async ({ title, multiplier = 1, description, category }) => {
     this.setState({ loading: true });
 
     if (!category && category !== 0) {
@@ -136,6 +137,7 @@ class PrizePage extends Component {
     const formData = new FormData();
 
     formData.append('title', title);
+    formData.append('multiplier', multiplier);
     formData.append('description', description);
     formData.append('categoryId', category);
 
@@ -160,6 +162,7 @@ class PrizePage extends Component {
     if (err) {
       // eslint-disable-next-line no-console
       console.log('Error creating/updating prize', err);
+      this.setState({ errors: ['Error creating/updating prize', err] });
       return;
     }
 
@@ -217,27 +220,18 @@ class PrizePage extends Component {
             <Form onSubmit={this.onFormSubmit}>
               {({ formProps }) => (
                 <form {...formProps}>
-                  <Title level={1} elementLevel={1}>Prize</Title>
-                  {
-                    this.state.errors.map((error) => (
-                      <Alert key={error.detail} detail={error.detail} onClose={this.onApiErrorClose}>
-                        {error.title}
-                      </Alert>
-                    ))
-                  }
+                  <Title level={1} elementLevel={1}>
+                    Prize
+                  </Title>
+                  {this.state.errors.map((error) => (
+                    <Alert key={error.detail} detail={error.detail} onClose={this.onApiErrorClose}>
+                      {error.title}
+                    </Alert>
+                  ))}
                   <Layout.Grid columns={[1]} areas={[]} multiplier={3}>
-                    <Field
-                      label="Title"
-                      name="title"
-                      defaultValue={this.state.title}
-                    >
+                    <Field label="Title" name="title" defaultValue={this.state.title}>
                       {({ fieldProps }) => (
-                        <Input
-                          {...fieldProps}
-                          fullWidth
-                          placeholder="Title"
-                          maxLength={100}
-                        />
+                        <Input {...fieldProps} fullWidth placeholder="Title" maxLength={100} />
                       )}
                     </Field>
                     <Field
@@ -246,16 +240,29 @@ class PrizePage extends Component {
                       defaultValue={this.state.selectedCategory}
                     >
                       {({ fieldProps }) => (
-                        <Select
-                          {...fieldProps}
-                          placeholder="Select a Category"
-                        >
+                        <Select {...fieldProps} placeholder="Select a Category">
                           {this.state.categories.map((category) => (
                             <Option key={category.id} value={category.id}>
                               {category.display}
                             </Option>
                           ))}
                         </Select>
+                      )}
+                    </Field>
+                    <Field
+                      label="Number of Drawings"
+                      name="multiplier"
+                      defaultValue={this.state.multiplier}
+                    >
+                      {({ fieldProps }) => (
+                        <Input
+                          {...fieldProps}
+                          fullWidth
+                          rows={5}
+                          placeholder="Number of Drawings"
+                          elementType="number"
+                          min={1}
+                        />
                       )}
                     </Field>
                     <Field
@@ -289,11 +296,21 @@ class PrizePage extends Component {
                         onChange={this.onFileChange}
                       />
                     </Layout.Grid>
-                    <Layout.Grid columns={['repeat(2, minmax(0, max-content))']} areas={[]} multiplier={2} justify="space-between">
+                    <Layout.Grid
+                      columns={['repeat(2, minmax(0, max-content))']}
+                      areas={[]}
+                      multiplier={2}
+                      justify="space-between"
+                    >
                       <Button domain="primary" type="submit">
                         Save
                       </Button>
-                      <Layout.Grid columns={['repeat(2, minmax(0, max-content))']} areas={[]} multiplier={2} justify="space-between">
+                      <Layout.Grid
+                        columns={['repeat(2, minmax(0, max-content))']}
+                        areas={[]}
+                        multiplier={2}
+                        justify="space-between"
+                      >
                         {this.props.match.params.id && (
                           <Button domain="danger" onClick={this.onDeletePrize}>
                             Delete Prize
@@ -301,7 +318,7 @@ class PrizePage extends Component {
                         )}
                         {this.props.match.params.id && (
                           <Button domain="warning" onClick={this.onClearUsed}>
-                            Clear Used For Prize Tickets
+                            Clear Tickets Used For Prize
                           </Button>
                         )}
                       </Layout.Grid>
