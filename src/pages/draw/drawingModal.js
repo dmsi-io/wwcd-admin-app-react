@@ -2,14 +2,35 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import Anime from 'react-anime';
 
+import styled from 'styled-components';
+
 import { Button, Modal } from '@wedgekit/core';
-import Icon from '@wedgekit/icons';
 
 import Api from '../../utils/api';
 
 import s from './drawingModal.module.scss';
 
 const TICKET_WIDTH = 100;
+
+const RedrawButton = styled(Button)`
+  border-radius: 1rem;
+  font-size: 5vh;
+  font-weight: lighter;
+  line-height: 6vh;
+  padding: 1rem;
+
+  :focus,
+  :focus-within,
+  > *:focus,
+  > *:focus-within,
+  :focus::after,
+  :focus-within::after,
+  > *:focus::after,
+  > *:focus-within::after {
+    border-width: 0;
+    outline: none;
+  }
+`;
 
 class DrawingModal extends Component {
   constructor(props) {
@@ -46,13 +67,13 @@ class DrawingModal extends Component {
                 ...ticket,
                 user,
                 displayData: {
-                  delay: Math.random() * 500,
-                  startX: Math.random() * window.innerWidth,
-                  endXRandom: Math.random() * 400 - 200,
-                  flyingYRandom: Math.random() * 100,
-                  endXRandom2: Math.random() * 400 - 200,
-                  flyingYRandom2: Math.random() * 100,
-                  randomRotate: Math.floor(Math.random() * 240 + 120),
+                  delay: Math.random() * 175 + 200,
+                  startX: Math.random() * window.innerWidth * 0.9,
+                  endXRandom: Math.sin(Math.PI * Math.random()) * 400 - 200,
+                  flyingYRandom: Math.random() * 150 + 60,
+                  endXRandom2: Math.random() * 300 - 150,
+                  flyingYRandom2: Math.random() * 325,
+                  randomRotate: Math.floor(Math.random() * 360 + 60),
                 },
               },
             ];
@@ -67,7 +88,6 @@ class DrawingModal extends Component {
   }
 
   redraw = () => {
-    console.log('hi');
     this.setState(
       {
         display: false,
@@ -104,7 +124,7 @@ class DrawingModal extends Component {
     const { onExit } = this.props;
     return (
       <Modal fullscreen onExit={onExit}>
-        <div style={{ position: 'relative', width: '100vw', height: '90vh' }}>
+        <div style={{ position: 'relative', width: '90vw', height: '78vh' }}>
           {this.state.display && (
             <>
               <Anime
@@ -114,7 +134,7 @@ class DrawingModal extends Component {
                     duration: 1000,
                     easing: 'easeInOutQuad',
                     value: (e, i) =>
-                      window.innerWidth / 2 -
+                      window.innerWidth * 0.45 -
                       TICKET_WIDTH / 2 -
                       this.state.tickets[i].displayData.startX +
                       this.state.tickets[i].displayData.endXRandom,
@@ -125,7 +145,7 @@ class DrawingModal extends Component {
                     duration: 0,
                     easing: 'linear',
                     value: (e, i) =>
-                      window.innerWidth / 2 -
+                      window.innerWidth * 0.45 -
                       TICKET_WIDTH / 2 -
                       this.state.tickets[i].displayData.startX +
                       Math.abs(this.state.tickets[i].displayData.endXRandom + 100) -
@@ -136,10 +156,10 @@ class DrawingModal extends Component {
                     duration: 1000,
                     easing: 'linear',
                     value: (e, i) =>
-                      window.innerWidth / 2 -
+                      window.innerWidth * 0.45 -
                       TICKET_WIDTH / 2 -
-                      this.state.tickets[i].displayData.startX +
-                      -Math.abs(this.state.tickets[i].displayData.endXRandom - 100) +
+                      this.state.tickets[i].displayData.startX -
+                      Math.abs(this.state.tickets[i].displayData.endXRandom - 100) +
                       100,
                   },
                   {
@@ -147,10 +167,10 @@ class DrawingModal extends Component {
                     duration: 0,
                     easing: 'linear',
                     value: (e, i) =>
-                      window.innerWidth / 2 -
+                      window.innerWidth * 0.45 -
                       TICKET_WIDTH / 2 -
-                      this.state.tickets[i].displayData.startX +
-                      -Math.abs(this.state.tickets[i].displayData.endXRandom2 - 100) +
+                      this.state.tickets[i].displayData.startX -
+                      Math.abs(this.state.tickets[i].displayData.endXRandom2 - 100) +
                       100,
                   },
                   {
@@ -158,7 +178,7 @@ class DrawingModal extends Component {
                     duration: 1000,
                     easing: 'linear',
                     value: (e, i) =>
-                      window.innerWidth / 2 -
+                      window.innerWidth * 0.45 -
                       TICKET_WIDTH / 2 -
                       this.state.tickets[i].displayData.startX +
                       Math.abs(this.state.tickets[i].displayData.endXRandom2 + 100) -
@@ -169,37 +189,37 @@ class DrawingModal extends Component {
                   {
                     duration: 800,
                     easing: 'easeInOutQuad',
-                    value: '300px',
+                    value: '500px',
                     delay: (e, i) => this.state.tickets[i].displayData.delay,
                   },
                   {
                     duration: 200,
                     easing: 'linear',
-                    value: '400px',
+                    value: '600px',
                     delay: 0,
                   },
                   {
                     delay: 700,
                     duration: 400,
-                    value: (e, i) => 200 - this.state.tickets[i].displayData.flyingYRandom,
+                    value: (e, i) => 600 - this.state.tickets[i].displayData.flyingYRandom,
                     easing: 'easeOutCubic',
                   },
                   {
                     delay: 100,
                     duration: 500,
-                    value: '400px',
+                    value: '600px',
                     easing: 'easeInCubic',
                   },
                   {
                     delay: 500,
                     duration: 400,
-                    value: (e, i) => 200 - this.state.tickets[i].displayData.flyingYRandom2,
+                    value: (e, i) => 450 - this.state.tickets[i].displayData.flyingYRandom2,
                     easing: 'easeOutCubic',
                   },
                   {
                     delay: 100,
                     duration: 500,
-                    value: '400px',
+                    value: '600px',
                     easing: 'easeInCubic',
                   },
                 ]}
@@ -243,7 +263,7 @@ class DrawingModal extends Component {
               <Anime
                 key="4"
                 delay={5000}
-                translateY={-280}
+                translateY={-320}
                 easing="easeOutCirc"
                 direction="normal"
                 scale={[1, 1, 6]}
@@ -251,8 +271,8 @@ class DrawingModal extends Component {
                 <div
                   className={s.animatedContainer}
                   style={{
-                    left: window.innerWidth / 2 - TICKET_WIDTH / 2,
-                    top: '400px',
+                    left: window.innerWidth * 0.45 - TICKET_WIDTH / 2,
+                    top: '600px',
                   }}
                 >
                   <div>
@@ -264,6 +284,7 @@ class DrawingModal extends Component {
               </Anime>
               <Anime
                 key="5"
+                translateY={200}
                 rotate={[
                   {
                     value: '12deg',
@@ -293,17 +314,17 @@ class DrawingModal extends Component {
               >
                 <div className={s.bowlBackground} onClick={this.redraw}>
                   <div className={s.bowl}>
-                    <div />
-                    <span>DMSi Holiday Party</span>
+                    <div>❅ ❅ ❅ ❅ ❅ ❅ ❅ ❅ ❅ ❅ ❅ ❅ ❅ ❅ ❅ ❅ ❅ ❅ ❅ ❅ ❅ ❅</div>
+                    <span>❅ DMSi Holiday Party ❅</span>
                   </div>
                 </div>
               </Anime>
             </>
           )}
         </div>
-        <Button domain="primary" style={{ margin: 'auto' }} onClick={this.redraw}>
+        <RedrawButton domain="primary" style={{ margin: 'auto' }} onClick={this.redraw}>
           Redraw
-        </Button>
+        </RedrawButton>
       </Modal>
     );
   }
