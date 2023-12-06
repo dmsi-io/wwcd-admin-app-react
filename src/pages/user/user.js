@@ -12,13 +12,19 @@ import Header from '../../components/header/header';
 
 import s from './user.module.scss';
 
+// Apologies for the obscenities
+const swearPreventionRegex = /fuc?k|fag|cunt|n[i1]g|a[s5][s5]|[s5]h[i1]t|b[i1]a?t?ch|c[l1][i1]t|j[i1]zz|[s5]ex|[s5]meg|d[i1]c?k?|pen[i1][s5]|pube|p[i1][s5][s5]|g[o0]d|crap|b[o0]ne|basta|ar[s5]|ana[l1]|anu[s5]|ba[l1][l1]|b[l1][o0]w|b[o0][o0]b|[l1]mf?a[o0]/
+
 const generatePassword = () => {
   const length = 5;
-  const charset = 'abcdefghjkmnpqrstuvwxyzABCDEFGHIJKLMNPQRSTUVWXYZ23456789';
-  let retVal = '';
-  for (let i = 0; i < length; ++i) {
-    retVal += charset.charAt(Math.floor(Math.random() * charset.length));
-  }
+  const charset = 'qwertyuiopasdfghjkzxcvbnmWERTYUPADFGHJKLZXCVBNM2346789';
+  let retVal;
+  do {
+    retVal = '';
+    for (let i = 0; i < length; ++i) {
+      retVal += charset.charAt(Math.floor(Math.random() * charset.length));
+    }
+  } while (swearPreventionRegex.test(retVal));
   return retVal;
 };
 
