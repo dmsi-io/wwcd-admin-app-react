@@ -314,7 +314,7 @@ class DrawingModal extends Component {
               >
                 <div className={s.bowlBackground} onClick={this.redraw}>
                   <div className={s.bowl}>
-                    <div>❅ ❅ ❅ ❅ ❅ ❅ ❅ ❅ ❅ ❅ ❅ ❅ ❅ ❅ ❅ ❅ ❅ ❅ ❅ ❅ ❅ ❅</div>
+                    <div>❅ ❅ ❅ ❅ ❅ ❅ ❅ ❅ ❅ ❅ ❅ ❅ ❅ ❅ ❅ ❅ ❅ ❅ ❅ ❅ ❅</div>
                     <span>❅ DMSi Holiday Party ❅</span>
                   </div>
                 </div>
