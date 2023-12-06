@@ -34,24 +34,31 @@ class DrawingModal extends Component {
       display: true,
       winnerFirstName,
       winnerLastName,
-      // Improve performance by only rendering up to 100 tickets. This does not affect winner selection as the winner
-      // was already chosen
-      tickets: props.prize.tickets.slice(0, 100).map((ticket) => {
-        const user = this.props.users.find(({ id }) => ticket.userId === id);
-        return {
-          ...ticket,
-          user,
-          displayData: {
-            delay: Math.random() * 500,
-            startX: Math.random() * window.innerWidth,
-            endXRandom: Math.random() * 400 - 200,
-            flyingYRandom: Math.random() * 100,
-            endXRandom2: Math.random() * 400 - 200,
-            flyingYRandom2: Math.random() * 100,
-            randomRotate: Math.floor(Math.random() * 240 + 120),
-          },
-        };
-      }),
+      // Improve performance by only rendering up to 100 tickets, and only one per person. This does not affect winner
+      // selection as the winner was already chosen
+      tickets: Array.from(
+        new Map(
+          props.prize.tickets.map((ticket) => {
+            const user = this.props.users.find(({ id }) => ticket.userId === id);
+            return [
+              user.id,
+              {
+                ...ticket,
+                user,
+                displayData: {
+                  delay: Math.random() * 500,
+                  startX: Math.random() * window.innerWidth,
+                  endXRandom: Math.random() * 400 - 200,
+                  flyingYRandom: Math.random() * 100,
+                  endXRandom2: Math.random() * 400 - 200,
+                  flyingYRandom2: Math.random() * 100,
+                  randomRotate: Math.floor(Math.random() * 240 + 120),
+                },
+              },
+            ];
+          }),
+        ).values(),
+      ).slice(0, 100),
     };
   }
 
@@ -284,7 +291,7 @@ class DrawingModal extends Component {
                   },
                 ]}
               >
-                <div className={s.bowlBackground}>
+                <div className={s.bowlBackground} onClick={this.redraw}>
                   <div className={s.bowl}>
                     <div />
                     <span>DMSi Holiday Party</span>

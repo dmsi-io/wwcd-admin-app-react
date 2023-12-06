@@ -6,13 +6,17 @@
   background-image: url('https://storage.googleapis.com/wwcd-storage/photos/ticket.png');
   background-size: contain;
 
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
   > div {
     top: 8px;
     text-align: center;
-    width: 100%;
-    font-size: 16px;
+    width: 80%;
+    font-size: 15px;
     position: absolute;
-    line-height: 17px;
+    line-height: 16px;
   }
 }
 
