@@ -44,7 +44,7 @@ class ExportUsersPage extends Component {
       <div>
         <Header />
         {this.state.loading && <Loading />}
-        <div
+        <pre
           style={{
             width: '80%',
             minWidth: '200px',
@@ -58,7 +58,7 @@ class ExportUsersPage extends Component {
               {user.firstName},{user.lastName},{user.username},{user.password}
             </div>
           ))}
-        </div>
+        </pre>
       </div>
     );
   }
