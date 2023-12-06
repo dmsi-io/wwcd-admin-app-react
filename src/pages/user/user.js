@@ -160,9 +160,27 @@ class UserPage extends Component {
     }
   };
 
-  onGenerateUsername = () => {
-    if (this.state.firstName.length > 0 && this.state.lastName.length > 0) {
-      return (`${this.state.firstName.slice(0, 1)}${this.state.lastName}`).toLowerCase();
+  onGenerateUsername = async () => {
+    if (this.state.firstName.length === 0 && this.state.lastName.length === 0) {
+      return '';
+    }
+
+
+    const username = (`${this.state.firstName.charAt(0)}${this.state.lastName}`).toLowerCase();
+
+    const [err, res] = await Api.get('/users', true);
+    if (err) {
+      // eslint-disable-next-line no-console
+      console.log('Error getting users', err);
+      this.setState({ loading: false });
+      return '';
+    }
+    if (res && res.data) {
+      const { id } = this.props.match.params;
+      const found = res.data.filter(
+        ({ attributes }) => attributes.id !== id && attributes.username.startsWith(username.toLowerCase()),
+      );
+      return `${username}${found.length + 1}`
     }
 
     return '';
@@ -233,7 +251,7 @@ class UserPage extends Component {
                               fullWidth
                               error={this.state.usernameInvalid ? 'Username already taken' : ''}
                             />
-                            <Button onClick={() => fieldProps.onChange(this.onGenerateUsername())}>
+                            <Button onClick={() => this.onGenerateUsername().then((res) => fieldProps.onChange(res))}>
                               Generate Username
                             </Button>
                           </Layout.Grid>
