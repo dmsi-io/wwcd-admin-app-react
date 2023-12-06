@@ -1,18 +1,35 @@
+@mixin no-text-selection {
+  /* No text selection */
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
 .animatedContainer {
   height: 50px;
   width: 100px;
   position: absolute;
 
   background-image: url('https://storage.googleapis.com/wwcd-storage/photos/ticket.png');
-  background-size: contain;
+  background-size: cover;
+  background-repeat: no-repeat;
 
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
   > div {
+    @include no-text-selection;
+
     top: 8px;
     text-align: center;
-    width: 100%;
-    font-size: 16px;
+    width: 80%;
+    font-size: 15px;
     position: absolute;
-    line-height: 17px;
+    line-height: 16px;
   }
 }
 
@@ -26,34 +43,60 @@
   z-index: 100;
 
   .bowl {
-    background-color: #0075C4;
+    background: repeating-linear-gradient(
+                    30deg,
+                    #0075C4,
+                    #0075C4 10px,
+                    #F0F3F5 10px,
+                    #F0F3F5 30px
+    );
     height: 300px;
     width: 600px;
-    border-radius: 0px 0px 300px 300px;
+    border-color: #131b23;
+    border-radius: 0 0 360px 360px;
+    border-style: solid;
+    border-width: 0 1px 1px 1px;
     position: absolute;
     z-index: 100;
     left: calc(50% - 300px);
 
     > div {
+      @include no-text-selection;
+
       position: absolute;
       top: 0;
       left: -2.5%;
       width: 105%;
       height: 40px;
-      background-color: #00486B;
+      background-color: #005a98;
+      border-radius: 6px;
+
+      color: #f0f3f5;
+      text-align: center;
+      font-size: 32px;
+      overflow: hidden;
     }
 
     > span {
+      @include no-text-selection;
+
       position: absolute;
       top: 45%;
-      left: 50%;
-      -webkit-transform: translate(-50%, -50%);
-      transform: translate(-50%, -50%);
-      font-size: 4em;
+      -webkit-transform: translate(11%, -70%);
+      transform: translate(11%, -70%);
+      padding: 0.1em;
+
+      background-color: #0075c4;
+      border-color: #F0F3F5;
+      border-radius: 12px;
+      border-style: solid;
+      border-width: 1px;
+
       color: #fff;
       text-align: center;
       line-height: 1.1em;
-      text-shadow: -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 2px 2px 0 #000;
+      font-size: 4em;
+      text-shadow: -2px -2px 0 #004879, 2px -2px 0 #004879, -2px 2px 0 #004879, 2px 2px 0 #004879;
     }
   }
 }
@@ -68,6 +111,7 @@
   position: relative;
 
   > span {
+    @include no-text-selection;
     position: absolute;
     top: 53%;
     left: 50%;

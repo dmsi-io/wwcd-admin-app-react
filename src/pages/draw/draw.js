@@ -13,17 +13,16 @@ import s from './draw.module.scss';
 import DrawingModal from './drawingModal';
 
 const sortPrizes = (a, b) => {
-  if (a.title < b.title) {
-    return -1;
-  }
-  return a.title > b.title ? 1 : 0;
+  const aTitle = a.title.toLowerCase();
+  const bTitle = b.title.toLowerCase();
+  return aTitle.localeCompare(bTitle);
 };
 
 const ImageContainer = styled.div`
   width: 100px;
   height: 100px;
   position: relative;
-  
+
   img {
     width: 100%;
     height: 100%;
@@ -217,7 +216,9 @@ class DrawPage extends Component {
         {this.state.loading && <Loading />}
         <Card className={s.contentContainer}>
           <Layout.Grid columns={[1]} areas={[]} multiplier={3}>
-            <Title level={1} elementLevel={1}>Draw for Prizes</Title>
+            <Title level={1} elementLevel={1}>
+              Draw for Prizes
+            </Title>
             <Layout.Grid columns={[1]} multiplier={2} areas={[]}>
               {this.state.prizes.map((prize) => (
                 <StackedCard
@@ -228,18 +229,27 @@ class DrawPage extends Component {
                   onKeyPress={() => {}}
                   className={s.prizeContainer}
                 >
-                  <Layout.Grid align="start" columns={['minmax(0, max-content)', 1, 'minmax(0, 160px)']} multiplier={2} areas={[]}>
+                  <Layout.Grid
+                    align="start"
+                    columns={['minmax(0, max-content)', 1, 'minmax(0, 160px)']}
+                    multiplier={2}
+                    areas={[]}
+                  >
                     {prize.image !== '' && prize.image != null && (
                       <ImageContainer>
                         <img src={prize.image} alt="Prize" />
                       </ImageContainer>
                     )}
                     <Layout.Grid columns={[1]} areas={[]} multiplier={2}>
-                      <Title elementLevel={3} level={3}>{prize.title}</Title>
+                      <Title elementLevel={3} level={3}>
+                        {prize.title}
+                      </Title>
                       <Text>{prize.description}</Text>
                     </Layout.Grid>
                     <Layout.Grid columns={[1]} areas={[]} multiplier={2} justify="center">
-                      <Title elementLevel={4} level={4} style={{ textAlign: 'center' }}># of Tickets:</Title>
+                      <Title elementLevel={4} level={4} style={{ textAlign: 'center' }}>
+                        # of Tickets:
+                      </Title>
                       <TicketCount>{prize.tickets.length}</TicketCount>
                     </Layout.Grid>
                   </Layout.Grid>

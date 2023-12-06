@@ -89,23 +89,23 @@ const Home = () => {
             </Layout.Grid>
           </Card>
         </Link>
-        <Link to="/selections">
-          <Card>
-            <Layout.Grid
-              columns={['repeat(2, minmax(0, max-content))']}
-              areas={[]}
-              justify="space-between"
-              align="center"
-            >
-              <Title level={1} elementLevel={2}>
-                Selections
-              </Title>
-              <IconWidth iconWidth={24}>
-                <Icon>chevron_right</Icon>
-              </IconWidth>
-            </Layout.Grid>
-          </Card>
-        </Link>
+        {/* <Link to="/selections"> // Old functionality used for fully-remote holiday */}
+        {/*   <Card> */}
+        {/*     <Layout.Grid */}
+        {/*       columns={['repeat(2, minmax(0, max-content))']} */}
+        {/*       areas={[]} */}
+        {/*       justify="space-between" */}
+        {/*       align="center" */}
+        {/*     > */}
+        {/*       <Title level={1} elementLevel={2}> */}
+        {/*         Selections */}
+        {/*       </Title> */}
+        {/*       <IconWidth iconWidth={24}> */}
+        {/*         <Icon>chevron_right</Icon> */}
+        {/*       </IconWidth> */}
+        {/*     </Layout.Grid> */}
+        {/*   </Card> */}
+        {/* </Link> */}
         <Button onClick={clearUsed}>
           <Card>
             <Layout.Grid

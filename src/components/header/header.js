@@ -17,12 +17,12 @@ const AppHeader = styled.header`
   -ms-flex-align: center;
   align-items: center;
   padding: 16px 12px;
-  box-shadow: 0 -6px 22px 0 rgba(0,0,0,0.4);
+  box-shadow: 0 -6px 22px 0 rgba(0, 0, 0, 0.4);
   z-index: 1030;
   position: relative;
   width: 100%;
-  background: #FFFFFF;
-  grid-template-columns: repeat(2, minmax(0,max-content));
+  background: #ffffff;
+  grid-template-columns: repeat(2, minmax(0, max-content));
   box-sizing: border-box;
   justify-content: space-between;
 `;
@@ -39,12 +39,39 @@ const Header = ({ history }) => {
 
   return (
     <AppHeader>
-      <Link to="/">
-        <Title level={2} elementLevel={2}>WWCD</Title>
-      </Link>
-      <Layout.Grid areas={[]} columns={['repeat(2, minmax(0, max-content))']} multiplier={2} align="center">
+      <Layout.Grid
+        areas={[]}
+        columns={['repeat(4, minmax(0, max-content))']}
+        multiplier={2}
+        align="center"
+      >
+        <Link to="/">
+          <Title level={2} elementLevel={2}>
+            WWCD
+          </Title>
+        </Link>
+        <p>|</p>
+        <Link to="/prizes">
+          <Title level={3} elementLevel={3}>
+            Prizes
+          </Title>
+        </Link>
+        <Link to="/users">
+          <Title level={3} elementLevel={3}>
+            Users
+          </Title>
+        </Link>
+      </Layout.Grid>
+      <Layout.Grid
+        areas={[]}
+        columns={['repeat(2, minmax(0, max-content))']}
+        multiplier={2}
+        align="center"
+      >
         <span>Hello {username}</span>
-        <Button onClick={logout} domain="primary">Logout</Button>
+        <Button onClick={logout} domain="primary">
+          Logout
+        </Button>
       </Layout.Grid>
     </AppHeader>
   );

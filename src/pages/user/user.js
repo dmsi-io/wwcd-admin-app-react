@@ -12,13 +12,19 @@ import Header from '../../components/header/header';
 
 import s from './user.module.scss';
 
+// Apologies for the obscenities
+const swearPreventionRegex = /fuc?k|fag|cunt|n[i1]g|a[s5][s5]|[s5]h[i1]t|b[i1]a?t?ch|c[l1][i1]t|j[i1]zz|[s5]ex|[s5]meg|d[i1]c?k?|pen[i1][s5]|pube|p[i1][s5][s5]|g[o0]d|crap|b[o0]ne|basta|ar[s5]|ana[l1]|anu[s5]|ba[l1][l1]|b[l1][o0]w|b[o0][o0]b|[l1]mf?a[o0]/;
+
 const generatePassword = () => {
   const length = 5;
-  const charset = 'abcdefghjkmnpqrstuvwxyzABCDEFGHIJKLMNPQRSTUVWXYZ23456789';
-  let retVal = '';
-  for (let i = 0; i < length; ++i) {
-    retVal += charset.charAt(Math.floor(Math.random() * charset.length));
-  }
+  const charset = 'qwertyuiopasdfghjkzxcvbnmWERTYUPADFGHJKLZXCVBNM2346789';
+  let retVal;
+  do {
+    retVal = '';
+    for (let i = 0; i < length; ++i) {
+      retVal += charset.charAt(Math.floor(Math.random() * charset.length));
+    }
+  } while (swearPreventionRegex.test(retVal));
   return retVal;
 };
 
@@ -154,9 +160,27 @@ class UserPage extends Component {
     }
   };
 
-  onGenerateUsername = () => {
-    if (this.state.firstName.length > 0 && this.state.lastName.length > 0) {
-      return (`${this.state.firstName.slice(0, 1)}${this.state.lastName}`).toLowerCase();
+  onGenerateUsername = async () => {
+    if (this.state.firstName.length === 0 && this.state.lastName.length === 0) {
+      return '';
+    }
+
+    const username = `${this.state.firstName.charAt(0)}${this.state.lastName}`.toLowerCase();
+
+    const [err, res] = await Api.get('/users', true);
+    if (err) {
+      // eslint-disable-next-line no-console
+      console.log('Error getting users', err);
+      this.setState({ loading: false });
+      return '';
+    }
+    if (res && res.data) {
+      const { id } = this.props.match.params;
+      const found = res.data.filter(
+        ({ attributes }) =>
+          attributes.id !== id && attributes.username.startsWith(username.toLowerCase()),
+      );
+      return `${username}${found.length + 1}`;
     }
 
     return '';
@@ -175,7 +199,9 @@ class UserPage extends Component {
               {({ formProps }) => (
                 <form {...formProps}>
                   <Layout.Grid columns={[1]} areas={[]} multiplier={4}>
-                    <Title level={1} elementLevel={1}>User</Title>
+                    <Title level={1} elementLevel={1}>
+                      User
+                    </Title>
                     <Layout.Grid columns={[1]} areas={[]} multiplier={3}>
                       <Field
                         name="firstName"
@@ -195,11 +221,7 @@ class UserPage extends Component {
                           />
                         )}
                       </Field>
-                      <Field
-                        name="lastName"
-                        label="Last Name"
-                        defaultValue={this.state.lastName}
-                      >
+                      <Field name="lastName" label="Last Name" defaultValue={this.state.lastName}>
                         {({ fieldProps }) => (
                           <Input
                             {...fieldProps}
@@ -213,13 +235,14 @@ class UserPage extends Component {
                           />
                         )}
                       </Field>
-                      <Field
-                        label="Username"
-                        name="username"
-                        defaultValue={this.state.username}
-                      >
+                      <Field label="Username" name="username" defaultValue={this.state.username}>
                         {({ fieldProps }) => (
-                          <Layout.Grid columns={[1, 'minmax(0, max-content)']} multiplier={2} areas={[]} align="end">
+                          <Layout.Grid
+                            columns={[1, 'minmax(0, max-content)']}
+                            multiplier={2}
+                            areas={[]}
+                            align="end"
+                          >
                             <Input
                               {...fieldProps}
                               placeholder="Username"
@@ -227,19 +250,24 @@ class UserPage extends Component {
                               fullWidth
                               error={this.state.usernameInvalid ? 'Username already taken' : ''}
                             />
-                            <Button onClick={() => fieldProps.onChange(this.onGenerateUsername())}>
+                            <Button
+                              onClick={() =>
+                                this.onGenerateUsername().then((res) => fieldProps.onChange(res))
+                              }
+                            >
                               Generate Username
                             </Button>
                           </Layout.Grid>
                         )}
                       </Field>
-                      <Field
-                        name="password"
-                        label="Password"
-                        defaultValue={this.state.password}
-                      >
+                      <Field name="password" label="Password" defaultValue={this.state.password}>
                         {({ fieldProps }) => (
-                          <Layout.Grid columns={[1, 'minmax(0, max-content)']} multiplier={2} areas={[]} align="end">
+                          <Layout.Grid
+                            columns={[1, 'minmax(0, max-content)']}
+                            multiplier={2}
+                            areas={[]}
+                            align="end"
+                          >
                             <Input
                               {...fieldProps}
                               placeholder="Password"
@@ -264,14 +292,20 @@ class UserPage extends Component {
                         {({ fieldProps }) => (
                           <Input
                             {...fieldProps}
-                            placeholder="Ticket Count"
+                            elementType="number"
+                            error={this.state.ticketsInvalid ? 'Tickets must be a number' : ''}
+                            fullWidth
                             maxLength={10}
-                            error={this.state.ticketsInvalid ? 'Tickets must be a nubber' : ''}
+                            placeholder="Ticket Count"
                           />
                         )}
                       </Field>
                     </Layout.Grid>
-                    <Layout.Grid columns={['repeat(2, minmax(0, max-content))']} justify="space-between" areas={[]}>
+                    <Layout.Grid
+                      columns={['repeat(2, minmax(0, max-content))']}
+                      justify="space-between"
+                      areas={[]}
+                    >
                       {this.props.match.params.id && (
                         <Button domain="danger" onClick={this.onDeleteUser}>
                           Delete User
