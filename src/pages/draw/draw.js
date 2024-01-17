@@ -11,6 +11,8 @@ import Api from '../../utils/api';
 
 import s from './draw.module.scss';
 import DrawingModal from './drawingModal';
+import RouletteWheel from './rouletteWheel';
+import SlotWheel from './slotWheel';
 
 const sortPrizes = (a, b) => {
   const aTitle = a.title.toLowerCase();
