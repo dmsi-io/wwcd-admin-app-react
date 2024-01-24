@@ -9,56 +9,55 @@
 }
 
 .animatedContainer {
-  height: 50px;
-  width: 100px;
+  aspect-ratio: 2;
+  width: 8vw;
   position: absolute;
 
   background-image: url('https://storage.googleapis.com/wwcd-storage/photos/ticket.png');
   background-size: cover;
   background-repeat: no-repeat;
 
-
   display: flex;
   align-items: center;
   justify-content: center;
-  > div {
+  @include no-text-selection;
+
+  text-align: center;
+  vertical-align: center;
+  > {
     @include no-text-selection;
 
-    top: 8px;
     text-align: center;
+    vertical-align: center;
     width: 80%;
-    font-size: 15px;
+    font-size: 1.5vh;
     position: absolute;
-    line-height: 16px;
+    line-height: 2vh;
   }
 }
 
 .bowlBackground {
-  top: 300px;
-  left: calc(50% - 300px);
-  height: 300px;
-  width: 600px;
-  background-color: white;
+  top: 10vh;
+  left: calc(50% - 30vh);
+  height: 30vh;
+  width: 60vh;
   position: absolute;
   z-index: 100;
 
   .bowl {
-    background: repeating-linear-gradient(
-                    30deg,
-                    #0075C4,
-                    #0075C4 10px,
-                    #F0F3F5 10px,
-                    #F0F3F5 30px
-    );
-    height: 300px;
-    width: 600px;
+    background: repeating-linear-gradient(30deg, #0075c4, #0075c4 3vh, #f0f3f5 3vh, #f0f3f5 6vh);
+    height: 30vh;
+    width: 60vh;
     border-color: #131b23;
-    border-radius: 0 0 360px 360px;
+    border-radius: 0 0 36vh 36vh;
     border-style: solid;
     border-width: 0 1px 1px 1px;
     position: absolute;
     z-index: 100;
-    left: calc(50% - 300px);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
     > div {
       @include no-text-selection;
@@ -67,36 +66,34 @@
       top: 0;
       left: -2.5%;
       width: 105%;
-      height: 40px;
+      height: 5vh;
       background-color: #005a98;
       border-radius: 6px;
 
       color: #f0f3f5;
       text-align: center;
-      font-size: 32px;
+      font-size: 4vh;
+      line-height: 5vh;
       overflow: hidden;
     }
 
     > span {
       @include no-text-selection;
+      align-self: center;
+      justify-self: center;
 
-      position: absolute;
-      top: 45%;
-      -webkit-transform: translate(11%, -70%);
-      transform: translate(11%, -70%);
       padding: 0.1em;
 
       background-color: #0075c4;
-      border-color: #F0F3F5;
+      border-color: #f0f3f5;
       border-radius: 12px;
       border-style: solid;
       border-width: 1px;
 
       color: #fff;
       text-align: center;
-      line-height: 1.1em;
-      font-size: 4em;
-      text-shadow: -2px -2px 0 #004879, 2px -2px 0 #004879, -2px 2px 0 #004879, 2px 2px 0 #004879;
+      line-height: 4vh;
+      font-size: 2vh;
     }
   }
 }
@@ -121,6 +118,5 @@
     color: #fff;
     text-align: center;
     line-height: 0.9em;
-    text-shadow: -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 2px 2px 0 #000;
   }
 }
