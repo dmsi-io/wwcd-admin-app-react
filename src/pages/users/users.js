@@ -57,9 +57,21 @@ class UsersPage extends Component {
         {this.state.loading && <Loading />}
         <Card className={s.contentContainer}>
           <Layout.Grid columns={[1]} multiplier={4} areas={[]}>
-            <Layout.Grid columns={['repeat(2, minmax(0, max-content))']} areas={[]} align="center" justify="space-between">
-              <Title level={1} elementLevel={1}>Users</Title>
-              <Layout.Grid columns={['repeat(2, minmax(0, max-content))']} areas={[]} align="center" mutliplier={2}>
+            <Layout.Grid
+              columns={['repeat(2, minmax(0, max-content))']}
+              areas={[]}
+              align="center"
+              justify="space-between"
+            >
+              <Title level={1} elementLevel={1}>
+                Users
+              </Title>
+              <Layout.Grid
+                columns={['repeat(2, minmax(0, max-content))']}
+                areas={[]}
+                align="center"
+                mutliplier={2}
+              >
                 <Link to="/users/export">
                   <Button>Export Users</Button>
                 </Link>
@@ -72,7 +84,13 @@ class UsersPage extends Component {
               {this.state.users.map((user) => (
                 <Link key={user.id} to={`/user/${user.id}`}>
                   <StackedCard compact>
-                    <Layout.Grid columns={['repeat(2, minmax(0, max-content))']} areas={[]} multiplier={2} align="center" justify="space-between">
+                    <Layout.Grid
+                      columns={['repeat(2, minmax(0, max-content))']}
+                      areas={[]}
+                      multiplier={2}
+                      align="center"
+                      justify="space-between"
+                    >
                       <Title level={3} elementLevel={3}>
                         {user.lastName}, {user.firstName}
                       </Title>

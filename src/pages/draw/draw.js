@@ -23,6 +23,23 @@ const ImageContainer = styled.div`
   height: 100px;
   position: relative;
 
+  p {
+    background-color: ${color.R500};
+    border-radius: 50%;
+    height: 2em;
+    width: 2em;
+    font-size: 1.5em;
+    line-height: 2em;
+    text-align: center;
+    vertical-align: middle;
+    color: ${color.N050};
+
+    position: absolute;
+    top: -1.5em;
+    right: -0.5em;
+    z-index: 1;
+  }
+
   img {
     width: 100%;
     height: 100%;
@@ -33,6 +50,10 @@ const ImageContainer = styled.div`
     bottom: 0;
     object-fit: cover;
   }
+`;
+
+const ContentWrapper = styled(Layout.Grid)`
+  margin-left: 1em;
 `;
 
 const TicketCount = styled.span`
@@ -237,15 +258,18 @@ class DrawPage extends Component {
                   >
                     {prize.image !== '' && prize.image != null && (
                       <ImageContainer>
+                        {prize.multiplier && prize.multiplier > 1 ? (
+                          <p>x{prize.multiplier}</p>
+                        ) : null}
                         <img src={prize.image} alt="Prize" />
                       </ImageContainer>
                     )}
-                    <Layout.Grid columns={[1]} areas={[]} multiplier={2}>
+                    <ContentWrapper columns={[1]} areas={[]} multiplier={2}>
                       <Title elementLevel={3} level={3}>
                         {prize.title}
                       </Title>
                       <Text>{prize.description}</Text>
-                    </Layout.Grid>
+                    </ContentWrapper>
                     <Layout.Grid columns={[1]} areas={[]} multiplier={2} justify="center">
                       <Title elementLevel={4} level={4} style={{ textAlign: 'center' }}>
                         # of Tickets:
