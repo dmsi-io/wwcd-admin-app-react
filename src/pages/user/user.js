@@ -80,7 +80,7 @@ class UserPage extends Component {
             password: a.password,
             tickets: `${a.tickets}`,
             image: a.image,
-            origImage: a.origImage,
+            origImage: a.image,
             ticketsInvalid: false,
           });
         } else {
@@ -104,7 +104,7 @@ class UserPage extends Component {
     }
   };
 
-  onFormSubmit = async ({ firstName, lastName, username, password, tickets, image, origImage }) => {
+  onFormSubmit = async ({ firstName, lastName, username, password, tickets }) => {
     this.setState({
       loading: true,
       ticketsInvalid: false,
@@ -121,15 +121,7 @@ class UserPage extends Component {
       return;
     }
 
-    if (this.state.image !== this.state.origImage) {
-      if (this.state.image) {
-        this.setState({ image: this.imageFile });
-      }
-      // else if (this.state.origImage) {
-      //   formData.append('removeImage', true);
-      // }
-    }
-
+    // If new user verify username does not already exist
     if (!id) {
       const [err, res] = await Api.get('/users', true);
       if (err) {
@@ -152,26 +144,31 @@ class UserPage extends Component {
       }
     }
 
-    const data = {
-      attributes: {
-        firstName,
-        lastName,
-        username: username.toLowerCase(),
-        password,
-        tickets: Number(tickets),
-        image: this.state.image,
-        origImage: this.state.origImage,
-      },
-    };
+    const formData = new FormData();
+
+    formData.append('firstName', firstName);
+    formData.append('lastName', lastName);
+    formData.append('username', username.toLowerCase());
+    formData.append('password', password);
+    formData.append('tickets', Number(tickets));
+
+    if (this.state.image !== this.state.origImage) {
+      if (this.state.image) {
+        formData.append('image', this.imageFile);
+        this.setState({ image: this.imageFile });
+      } else if (this.state.origImage) {
+        formData.append('removeImage', true);
+      }
+    }
 
     let err;
 
     if (id) {
       // update existing record
-      [err] = await Api.put(`/users/${id}`, JSON.stringify({ data }), true);
+      [err] = await Api.putFormData(`/users/${id}`, formData, true);
     } else {
       // new record
-      [err] = await Api.post('/users', JSON.stringify({ data }), true);
+      [err] = await Api.putFormData('/users', formData, true);
     }
 
     if (err) {
@@ -343,7 +340,7 @@ class UserPage extends Component {
                         <Label htmlFor="image">Image</Label>
                         {this.state.image != null && this.state.image !== '' && (
                           <ImageContainer>
-                            <img alt="Prize" src={this.state.image} />
+                            <img alt="User" src={this.state.image} />
                           </ImageContainer>
                         )}
                         <input
