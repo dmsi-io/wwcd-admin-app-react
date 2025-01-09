@@ -5,15 +5,24 @@ import { Redirect } from 'react-router-dom';
 import { Loading, Input, Button, Card } from '@wedgekit/core';
 import Form, { Field } from '@wedgekit/form';
 import Layout from '@wedgekit/layout';
-import { Title } from '@wedgekit/primitives';
+import { Label, Title } from '@wedgekit/primitives';
 
 import Api from '../../utils/api';
 import Header from '../../components/header/header';
 
 import s from './user.module.scss';
+import styled from 'styled-components';
 
 // Apologies for the obscenities
 const swearPreventionRegex = /fuc?k|fag|cunt|n[i1]g|a[s5][s5]|[s5]h[i1]t|b[i1]a?t?ch|c[l1][i1]t|j[i1]zz|[s5]ex|[s5]meg|d[i1]c?k?|pen[i1][s5]|pube|p[i1][s5][s5]|g[o0]d|crap|b[o0]ne|basta|ar[s5]|ana[l1]|anu[s5]|ba[l1][l1]|b[l1][o0]w|b[o0][o0]b|[l1]mf?a[o0]/;
+
+const ImageContainer = styled.div`
+  width: 100%;
+
+  img {
+    width: 100%;
+  }
+`;
 
 const generatePassword = () => {
   const length = 5;
@@ -41,6 +50,8 @@ class UserPage extends Component {
       username: '',
       password: '',
       tickets: '',
+      image: '',
+      origImage: '',
     };
 
     this.imageInputRef = React.createRef();
@@ -57,7 +68,8 @@ class UserPage extends Component {
           this.setState({ notFound: true, loading: false });
           return;
         }
-
+        console.log('userData', data);
+        console.log('state', this.state);
         if (data && data.data && data.data.attributes) {
           const a = data.data.attributes;
           this.setState({
@@ -67,6 +79,8 @@ class UserPage extends Component {
             username: a.username,
             password: a.password,
             tickets: `${a.tickets}`,
+            image: a.image,
+            origImage: a.image,
             ticketsInvalid: false,
           });
         } else {
@@ -75,6 +89,20 @@ class UserPage extends Component {
       });
     }
   }
+
+  onFileChange = (e) => {
+    e.preventDefault();
+
+    const file = this.imageInputRef.current.files[0];
+    this.imageFile = file;
+    if (file) {
+      const reader = new global.FileReader();
+      reader.onload = (ev) => this.setState({ image: ev.target.result });
+      reader.readAsDataURL(file);
+    } else {
+      this.setState({ image: '' });
+    }
+  };
 
   onFormSubmit = async ({ firstName, lastName, username, password, tickets }) => {
     this.setState({
@@ -93,6 +121,7 @@ class UserPage extends Component {
       return;
     }
 
+    // If new user verify username does not already exist
     if (!id) {
       const [err, res] = await Api.get('/users', true);
       if (err) {
@@ -115,24 +144,31 @@ class UserPage extends Component {
       }
     }
 
-    const data = {
-      attributes: {
-        firstName,
-        lastName,
-        username: username.toLowerCase(),
-        password,
-        tickets: Number(tickets),
-      },
-    };
+    const formData = new FormData();
+
+    formData.append('firstName', firstName);
+    formData.append('lastName', lastName);
+    formData.append('username', username.toLowerCase());
+    formData.append('password', password);
+    formData.append('tickets', Number(tickets));
+
+    if (this.state.image !== this.state.origImage) {
+      if (this.state.image) {
+        formData.append('image', this.imageFile);
+        this.setState({ image: this.imageFile });
+      } else if (this.state.origImage) {
+        formData.append('removeImage', true);
+      }
+    }
 
     let err;
 
     if (id) {
       // update existing record
-      [err] = await Api.put(`/users/${id}`, JSON.stringify({ data }), true);
+      [err] = await Api.putFormData(`/users/${id}`, formData, true);
     } else {
       // new record
-      [err] = await Api.post('/users', JSON.stringify({ data }), true);
+      [err] = await Api.putFormData('/users', formData, true);
     }
 
     if (err) {
@@ -300,6 +336,21 @@ class UserPage extends Component {
                           />
                         )}
                       </Field>
+                      <Layout.Grid columns={[1]} areas={[]} multiplier={2}>
+                        <Label htmlFor="image">Image</Label>
+                        {this.state.image != null && this.state.image !== '' && (
+                          <ImageContainer>
+                            <img alt="User" src={this.state.image} />
+                          </ImageContainer>
+                        )}
+                        <input
+                          ref={this.imageInputRef}
+                          name="image"
+                          type="file"
+                          accept="image/*"
+                          onChange={this.onFileChange}
+                        />
+                      </Layout.Grid>
                     </Layout.Grid>
                     <Layout.Grid
                       columns={['repeat(2, minmax(0, max-content))']}

@@ -4,7 +4,7 @@
     "commonjs": true,
     "es6": true
   },
-  "extends": ["@dmsi/eslint-config", "prettier", "plugin:react/recommended"],
+  "extends": [ "prettier", "plugin:react/recommended"],
   "plugins": ["react", "react-hooks"],
   "rules": {
     "max-len": "off",

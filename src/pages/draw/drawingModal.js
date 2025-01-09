@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import { Modal } from '@wedgekit/core';
 
 import BowlDrawing from './animations/bowl';
+import SlotMachine from './animations/slotMachine';
 
 const ANIMATIONS = [BowlDrawing];
 
@@ -11,19 +12,26 @@ class DrawingModal extends Component {
   constructor(props) {
     super(props);
 
-    let winnerFirstName = '';
-    let winnerLastName = '';
+    let prizeWinner = {};
 
     if (props.winningTicket.userId) {
       const found = props.users.find((user) => user.id === props.winningTicket.userId);
 
       if (found) {
-        winnerFirstName = found.firstName;
-        winnerLastName = found.lastName;
+        prizeWinner = {
+          firstName: found.firstName,
+          lastName: found.lastName,
+          initials: `${found.firstName.charAt(0)}${found.lastName.charAt(0)}`,
+          image: found.image,
+        };
       }
     } else {
-      winnerFirstName = props.winningTicket.firstName;
-      winnerLastName = props.winningTicket.lastName;
+      prizeWinner = {
+        firstName: 'Player',
+        lastName: 'Not Found',
+        initials: props.winningTicket.userId,
+        image: '',
+      };
     }
 
     const animation = ANIMATIONS[Math.floor(ANIMATIONS.length * Math.random())];
@@ -31,12 +39,14 @@ class DrawingModal extends Component {
     const tickets = props.prize.tickets.map((ticket) => ({
       ...ticket,
       user: users.find(({ id }) => ticket.userId === id),
+      initials: `${users.find(({ id }) => ticket.userId === id).firstName.charAt(0)}${users
+        .find(({ id }) => ticket.userId === id)
+        .lastName.charAt(0)}`,
     }));
     this.state = {
       animation,
       display: true,
-      winnerFirstName,
-      winnerLastName,
+      prizeWinner,
       // Improve performance by only rendering up to 100 tickets, and only one per person. This does not affect winner
       // selection as the winner was already chosen
       tickets:
@@ -51,18 +61,12 @@ class DrawingModal extends Component {
   }
 
   render() {
-    const { animation: Animation, tickets, winnerFirstName, winnerLastName } = this.state;
+    const { animation: Animation, prizeWinner, tickets } = this.state;
     const { onExit } = this.props;
     return (
       <Modal fullscreen onExit={onExit}>
-        <div style={{ position: 'relative', width: '90vw', height: '60vh' }}>
-          {this.state.display && (
-            <Animation
-              tickets={tickets}
-              winnerFirstName={winnerFirstName}
-              winnerLastName={winnerLastName}
-            />
-          )}
+        <div style={{ position: 'relative', width: '90vw', height: '80vh' }}>
+          {this.state.display && <SlotMachine tickets={tickets} prizeWinner={prizeWinner} />}
         </div>
       </Modal>
     );
