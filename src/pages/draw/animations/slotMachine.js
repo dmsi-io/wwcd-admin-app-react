@@ -24,7 +24,6 @@ const SlotMachine = ({ tickets: playerTickets, prizeWinner }) => {
     avatar: {
       height: '80px',
       width: '80px',
-      backgroundColor: '#01821d',
       fontSize: '40px',
     },
   }));
@@ -56,9 +55,9 @@ const SlotMachine = ({ tickets: playerTickets, prizeWinner }) => {
         <div className={s.reels}>
           <RandomReveal
             isPlaying={true}
-            duration={7}
+            duration={10}
             updateInterval={0.3}
-            revealDuration={0.3}
+            revealDuration={0.2}
             characterSet={playerTickets.map((a) => (
               <Avatar {...player(a)} />
             ))}
@@ -73,16 +72,16 @@ const SlotMachine = ({ tickets: playerTickets, prizeWinner }) => {
         <div className={s.reels}>
           <RandomReveal
             isPlaying={true}
-            duration={7}
+            duration={10}
             updateInterval={0.3}
-            revealDuration={0.3}
+            revealDuration={0.2}
             characterSet={playerTickets.map((a) => (
               <Avatar {...player(a)} />
             ))}
             characters={[
-              <Avatar {...winner(prizeWinner)} />,
-              <Avatar {...winner(prizeWinner)} />,
-              <Avatar {...winner(prizeWinner)} />,
+              <Avatar {...winner(prizeWinner)} className={s.winningReel1} />,
+              <Avatar {...winner(prizeWinner)} className={s.winningReel2} />,
+              <Avatar {...winner(prizeWinner)} className={s.winningReel3} />,
             ]}
             onComplete={handleComplete}
           />
@@ -90,9 +89,9 @@ const SlotMachine = ({ tickets: playerTickets, prizeWinner }) => {
         <div className={s.reels}>
           <RandomReveal
             isPlaying={true}
-            duration={7}
+            duration={10}
             updateInterval={0.3}
-            revealDuration={0.3}
+            revealDuration={0.2}
             characterSet={playerTickets.map((a) => (
               <Avatar {...player(a)} />
             ))}

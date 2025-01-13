@@ -39,8 +39,31 @@
   margin: auto;
   height: 80px;
   width: 80px;
-  background-color: #01821d;
   font-size: 40px;
+}
+
+@keyframes borderBlink {
+    from, to {
+        box-shadow: none;
+    }
+    50% {
+        box-shadow: 0px 0px 10px 5px rgba(231,166,26,1);
+    }
+}
+
+.winningReel1 {
+  animation: borderBlink 1s step-end infinite;
+  animation-delay: 1900ms;
+}
+
+.winningReel2 {
+  animation: borderBlink 1s step-end infinite;
+  animation-delay: 1000ms;
+}
+
+.winningReel3 {
+  animation: borderBlink 1s step-end infinite;
+  animation-delay: 0ms;
 }
 
 .winner {
