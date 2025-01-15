@@ -2,11 +2,22 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
 import { Modal } from '@wedgekit/core';
+import Icon, { IconWidth } from '@wedgekit/icons';
 
 import BowlDrawing from './animations/bowl';
 import SlotMachine from './animations/slotMachine';
 
 const ANIMATIONS = [BowlDrawing];
+
+const NoDrawingsMsg = styled.div`
+  position: relative;
+  width: 450px;
+  display: flex;
+  align-items: center;
+  text-align: left;
+  font-size: 16px;
+  column-gap: 20px;
+`;
 
 class DrawingModal extends Component {
   constructor(props) {
@@ -65,9 +76,24 @@ class DrawingModal extends Component {
     const { onExit } = this.props;
     return (
       <Modal fullscreen onExit={onExit}>
-        <div style={{ position: 'relative', width: '90vw', height: '80vh' }}>
-          {this.state.display && <SlotMachine tickets={tickets} prizeWinner={prizeWinner} />}
-        </div>
+        {this.state.display && tickets.length > 0 ? (
+          <div style={{ position: 'relative', width: '90vw', height: '80vh' }}>
+            {this.state.display && tickets.length > 0 && (
+              <SlotMachine tickets={tickets} prizeWinner={prizeWinner} />
+            )}
+          </div>
+        ) : (
+          <NoDrawingsMsg>
+            <div>
+              <IconWidth iconWidth={48}>
+                <Icon color="Y500">warning</Icon>
+              </IconWidth>
+            </div>
+            <div>
+              There are no more tickets assigned to this prize. Please select a different prize.
+            </div>
+          </NoDrawingsMsg>
+        )}
       </Modal>
     );
   }
