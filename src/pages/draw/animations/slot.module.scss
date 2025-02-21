@@ -5,6 +5,7 @@
   width: 100%;
   height: 100%;
   background-image: url('./images/background_image.png');
+  overflow: scroll;
 }
 
 .slotMachine {
@@ -22,7 +23,7 @@
   overflow: hidden;
   align-items: center;
   justify-content: center;
-  margin-left: -10px;
+  margin-left: -8px;
   position: absolute;
   margin-top: 177px;
   z-index: 5;
@@ -79,4 +80,58 @@
   margin-top: 107px;
   margin-left: -10px;
   z-index: 3;
+}
+
+@media screen and (max-height: 850px) {
+
+  .slotMachine {
+    z-index: 1;
+    height: 450px;
+    width: 442px;
+    margin: 50px auto;
+  }
+
+  .emoji {
+    display: flex;
+    flex-direction: column;
+    height: 166px;
+    width: 100%;
+    overflow: hidden;
+    align-items: center;
+    justify-content: center;
+    margin-left: -7px;
+    position: absolute;
+    margin-top: 145px;
+    z-index: 5;
+  }
+
+  .reels {
+    display: flex;
+    padding: 10px;
+    width: 330px;
+  }
+
+  .reels > div {
+    display: flex;
+    margin: auto;
+    height: 60px;
+    width: 60px;
+    font-size: 30px;
+  }
+
+  .winner {
+    display: flex;
+    font-size: 18px;
+    font-weight: bold;
+    font-family: -apple-system, AppleGothic, serif;
+    flex-direction: column;
+    width: 100%;
+    background-color: transparent;
+    align-items: center;
+    position: absolute;
+    margin-top: 92px;
+    margin-left: -10px;
+    z-index: 3;
+  }
+
 }
